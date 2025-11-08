@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taxi Casino Hub</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="floating-elements" id="floatingElements"></div>
+    
+    <div class="game-hub">
+        <!-- Левый сайдбар -->
+        <div class="sidebar">
+            <div class="balance-container">
+                <div>Ваш баланс</div>
+                <div class="balance" id="balance">0 монет</div>
+                <div style="font-size: 12px; color: #666;">10 монет = 1 рубль</div>
+            </div>
+
+            <h2>🎮 Игровой Хаб</h2>
+            <div class="game-buttons">
+                <button class="game-btn active" onclick="showGame('roulette')">🎯 Такси Рулетка</button>
+                <button class="game-btn" onclick="showGame('minesweeper')">💣 Сапёр</button>
+                <button class="game-btn" onclick="showGame('match3')">🧩 Три в ряд</button>
+                <button class="game-btn admin-btn" onclick="showAdminPanel()">⚙️ Админ Панель</button>
+            </div>
+
+            <!-- Однорукий бандит -->
+            <div class="slot-machine">
+                <h3>🎰 Однорукий бандит</h3>
+                <div class="slots-container">
+                    <div class="slot" id="slot1">🍒</div>
+                    <div class="slot" id="slot2">🍋</div>
+                    <div class="slot" id="slot3">⭐</div>
+                </div>
+                <div class="slot-machine-buttons">
+                    <button class="spin-slot-btn" onclick="spinSlots()" id="spinSlotBtn">Крутить (10 монет)</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Основной контент -->
+        <div class="main-content">
+            <!-- Рулетка -->
+            <div class="game-area active" id="roulette-game">
+                <div class="game-header">
+                    <div class="taxi-icon">🚖</div>
+                    <h1>Рулетка монет Hantico</h1>
+                    <p class="subtitle">Крутите и выигрывайте монеты!</p>
+                </div>
+
+                <div class="roulette-section">
+                    <div class="roulette-container">
+                        <div class="pointer"></div>
+                        <div class="wheel" id="wheel">
+                            <div class="svg-container">
+                                <svg width="400" height="400" viewBox="0 0 400 400" id="rouletteSvg"></svg>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="result" id="result">
+                        <div class="result-text">Крутите рулетку и выигрывайте монеты!</div>
+                    </div>
+                    
+                    <div class="buttons">
+                        <button class="spin-btn pulse" id="spinBtn" onclick="spinRoulette()">🎯 Крутить рулетку (5 монет)</button>
+                        <button class="history-btn" onclick="toggleHistory()">📊 История</button>
+                    </div>
+                    
+                    <div class="history" id="history"></div>
+                </div>
+            </div>
+
+            <!-- Сапер -->
+            <div class="game-area" id="minesweeper-game">
+                <div class="game-header">
+                    <div>💣</div>
+                    <h1>Сапёр</h1>
+                    <p class="subtitle">Найдите все мины и заработайте монеты!</p>
+                </div>
+                <div class="minesweeper-board" id="minesweeperBoard"></div>
+                <div class="result" id="minesweeperResult">
+                    <div class="result-text">Нажмите на клетку чтобы начать игру</div>
+                </div>
+                <div class="buttons">
+                    <button class="spin-btn" onclick="initMinesweeper()">🔄 Новая игра</button>
+                </div>
+            </div>
+
+            <!-- Три в ряд -->
+            <div class="game-area" id="match3-game">
+                <div class="game-header">
+                    <div>🧩</div>
+                    <h1>Три в ряд</h1>
+                    <p class="subtitle">Собирайте линии из 3+ одинаковых элементов!</p>
+                </div>
+                <div class="match3-board" id="match3Board"></div>
+                <div class="result" id="match3Result">
+                    <div class="result-text">Выберите два элемента для обмена</div>
+                </div>
+                <div class="buttons">
+                    <button class="spin-btn" onclick="initMatch3()">🔄 Новая игра</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Правый сайдбар - Магазин -->
+        <div class="sidebar">
+            <div class="shop">
+                <h3>🛍️ Магазин призов</h3>
+                <div class="shop-items">
+                    <div class="shop-item" onclick="selectShopItem(0)">
+                        <div>Промо на 6ч</div>
+                        <div class="item-price">50 монет</div>
+                    </div>
+                    <div class="shop-item" onclick="selectShopItem(1)">
+                        <div>Промо на 12ч</div>
+                        <div class="item-price">100 монет</div>
+                    </div>
+                    <div class="shop-item" onclick="selectShopItem(2)">
+                        <div>Промо на 24ч</div>
+                        <div class="item-price">200 монет</div>
+                    </div>
+                    <div class="shop-item" onclick="selectShopItem(3)">
+                        <div>Вывод денег</div>
+                        <div class="item-price">1000 монет</div>
+                    </div>
+                </div>
+                <div class="shop-buttons">
+                    <button class="buy-btn" onclick="buyItem()" id="buyBtn">Подтвердить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Админ панель -->
+    <div class="admin-panel" id="adminPanel">
+        <h3>⚙️ Админ Панель</h3>
+        <input type="password" class="admin-input" id="adminPassword" placeholder="Введите пароль" onkeypress="handleAdminKeypress(event)">
+        <div class="admin-buttons">
+            <button class="admin-btn-panel cancel-btn" onclick="closeAdminPanel()">Отмена</button>
+            <button class="admin-btn-panel confirm-btn" onclick="checkAdminPassword()">Подтвердить</button>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
