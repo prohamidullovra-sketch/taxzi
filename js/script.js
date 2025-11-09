@@ -1,4 +1,4 @@
-// Система монет с улучшенным локальным сохранением
+// Система монет с локальным сохранением
 let userBalance = 100;
 let selectedShopItem = null;
 let currentGame = 'roulette';
@@ -7,8 +7,7 @@ let resultsHistory = [];
 
 // Инициализация данных пользователя
 function initUserData() {
-    const userId = getUserId();
-    const userData = JSON.parse(localStorage.getItem(`taxiUser_${userId}`)) || {};
+    const userData = JSON.parse(localStorage.getItem('taxiUserData')) || {};
     
     userBalance = userData.balance || 100;
     resultsHistory = userData.history || [];
@@ -17,31 +16,20 @@ function initUserData() {
     updateBalance();
 }
 
-// Получение уникального ID пользователя
-function getUserId() {
-    let userId = localStorage.getItem('taxiUserId');
-    if (!userId) {
-        userId = 'user_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
-        localStorage.setItem('taxiUserId', userId);
-    }
-    return userId;
-}
-
 // Сохранение данных пользователя
 function saveUserData() {
-    const userId = getUserId();
     const userData = {
         balance: userBalance,
         history: resultsHistory,
         lastPlay: new Date().toISOString()
     };
-    localStorage.setItem(`taxiUser_${userId}`, JSON.stringify(userData));
+    localStorage.setItem('taxiUserData', JSON.stringify(userData));
 }
 
 // Обновляем баланс на странице
 function updateBalance() {
     document.getElementById('balance').textContent = userBalance + ' монет';
-    saveUserData(); // Сохраняем при каждом изменении баланса
+    saveUserData();
 }
 
 // Создание рулетки с SVG (исправленная версия)
@@ -139,7 +127,6 @@ function spinRoulette() {
     spinBtn.classList.remove('pulse');
     
     const wheel = document.getElementById('wheel');
-    const svg = document.getElementById('rouletteSvg');
     
     // Сбрасываем трансформацию
     wheel.style.transition = 'none';
@@ -150,8 +137,8 @@ function spinRoulette() {
         const coins = [30, 20, 15, 10, 8, 5, 3, 2, 1, 0, 0, 0][randomIndex];
         
         // Рассчитываем угол так, чтобы указатель указывал на выигравший сегмент
-        const targetAngle = 360 - (randomIndex * 30) - 15; // -15 чтобы указатель был посередине сегмента
-        const spinDegrees = 5 * 360 + targetAngle; // 5 полных оборотов + целевой угол
+        const targetAngle = 360 - (randomIndex * 30) - 15;
+        const spinDegrees = 5 * 360 + targetAngle;
         
         wheel.style.transition = 'transform 4s cubic-bezier(0.1, 0.3, 0.2, 1)';
         wheel.style.transform = `rotate(${spinDegrees}deg)`;
@@ -235,4 +222,19 @@ function spinSlots() {
         
         spins++;
         if (spins >= maxSpins) {
-            clearInterval(spinIntervalId
+            clearInterval(spinIntervalId);
+            
+            // Финальные результаты
+            const finalResults = slots.map(() => slotSymbols[Math.floor(Math.random() * slotSymbols.length)]);
+            slots.forEach((slot, i) => {
+                slot.textContent = finalResults[i];
+                slot.classList.remove('slot-spinning');
+            });
+            
+            // Проверка выигрыша
+            const resultStr = finalResults.join('');
+            let winAmount = 0;
+            let winMessage = "😔 Попробуйте еще раз!";
+            
+            if (slotPayouts[resultStr]) {
+                winAmount = slotPayouts[resultStr
