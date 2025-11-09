@@ -8,10 +8,8 @@ let resultsHistory = [];
 // Инициализация данных пользователя
 function initUserData() {
     const userData = JSON.parse(localStorage.getItem('taxiUserData')) || {};
-    
     userBalance = userData.balance || 100;
     resultsHistory = userData.history || [];
-    
     updateBalance();
 }
 
@@ -347,6 +345,10 @@ function showGame(game) {
     
     if (game === 'roulette') {
         createRouletteWheel();
+    } else if (game === 'minesweeper') {
+        initMinesweeper();
+    } else if (game === 'match3') {
+        initMatch3();
     }
 }
 
@@ -408,6 +410,308 @@ function createFloatingElements() {
         element.style.fontSize = (Math.random() * 20 + 16) + 'px';
         container.appendChild(element);
     }
+}
+
+// ==================== САПЁР ====================
+
+let minesweeperBoard = [];
+let minesweeperGameOver = false;
+
+function initMinesweeper() {
+    const board = document.getElementById('minesweeperBoard');
+    const resultDiv = document.getElementById('minesweeperResult');
+    board.innerHTML = '';
+    minesweeperGameOver = false;
+    
+    resultDiv.innerHTML = '<div class="result-text">Найдите все безопасные клетки!</div>';
+    
+    // Создаем поле 8x8 с 10 минами
+    minesweeperBoard = Array(8).fill().map(() => Array(8).fill(0));
+    
+    // Расставляем мины
+    let minesPlaced = 0;
+    while (minesPlaced < 10) {
+        const x = Math.floor(Math.random() * 8);
+        const y = Math.floor(Math.random() * 8);
+        if (minesweeperBoard[y][x] !== 'X') {
+            minesweeperBoard[y][x] = 'X';
+            minesPlaced++;
+        }
+    }
+    
+    // Создаем клетки
+    for (let y = 0; y < 8; y++) {
+        for (let x = 0; x < 8; x++) {
+            const cell = document.createElement('div');
+            cell.className = 'minesweeper-cell';
+            cell.dataset.x = x;
+            cell.dataset.y = y;
+            cell.addEventListener('click', () => revealMinesweeperCell(x, y));
+            board.appendChild(cell);
+        }
+    }
+}
+
+function revealMinesweeperCell(x, y) {
+    if (minesweeperGameOver) return;
+    
+    const cell = document.querySelector(`.minesweeper-cell[data-x="${x}"][data-y="${y}"]`);
+    if (cell.classList.contains('revealed')) return;
+    
+    cell.classList.add('revealed');
+    
+    if (minesweeperBoard[y][x] === 'X') {
+        // Игрок наступил на мину
+        cell.classList.add('mine');
+        cell.textContent = '💣';
+        minesweeperGameOver = true;
+        
+        document.getElementById('minesweeperResult').innerHTML = `
+            <div class="result-text">💥 Вы проиграли! Мина взорвалась</div>
+            <div style="font-size: 14px; color: #666;">Начните новую игру</div>
+        `;
+        
+        // Показываем все мины
+        document.querySelectorAll('.minesweeper-cell').forEach(cell => {
+            const x = parseInt(cell.dataset.x);
+            const y = parseInt(cell.dataset.y);
+            if (minesweeperBoard[y][x] === 'X') {
+                cell.classList.add('mine');
+                cell.textContent = '💣';
+            }
+        });
+    } else {
+        // Подсчитываем мины вокруг
+        let mineCount = 0;
+        for (let dy = -1; dy <= 1; dy++) {
+            for (let dx = -1; dx <= 1; dx++) {
+                const newX = x + dx;
+                const newY = y + dy;
+                if (newX >= 0 && newX < 8 && newY >= 0 && newY < 8) {
+                    if (minesweeperBoard[newY][newX] === 'X') {
+                        mineCount++;
+                    }
+                }
+            }
+        }
+        
+        if (mineCount > 0) {
+            cell.textContent = mineCount;
+            // Разные цвета для разных чисел
+            const colors = ['', 'blue', 'green', 'red', 'purple', 'maroon', 'turquoise', 'black', 'gray'];
+            cell.style.color = colors[mineCount];
+        }
+        
+        // Если нет мин вокруг, открываем соседние клетки
+        if (mineCount === 0) {
+            for (let dy = -1; dy <= 1; dy++) {
+                for (let dx = -1; dx <= 1; dx++) {
+                    const newX = x + dx;
+                    const newY = y + dy;
+                    if (newX >= 0 && newX < 8 && newY >= 0 && newY < 8) {
+                        if (!document.querySelector(`.minesweeper-cell[data-x="${newX}"][data-y="${newY}"]`).classList.contains('revealed')) {
+                            revealMinesweeperCell(newX, newY);
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Проверяем победу
+        checkMinesweeperWin();
+    }
+}
+
+function checkMinesweeperWin() {
+    let unrevealedSafeCells = 0;
+    for (let y = 0; y < 8; y++) {
+        for (let x = 0; x < 8; x++) {
+            const cell = document.querySelector(`.minesweeper-cell[data-x="${x}"][data-y="${y}"]`);
+            if (!cell.classList.contains('revealed') && minesweeperBoard[y][x] !== 'X') {
+                unrevealedSafeCells++;
+            }
+        }
+    }
+    
+    if (unrevealedSafeCells === 0) {
+        // Победа!
+        minesweeperGameOver = true;
+        const winAmount = 30;
+        userBalance += winAmount;
+        updateBalance();
+        
+        document.getElementById('minesweeperResult').innerHTML = `
+            <div class="result-text">🎉 Победа! Вы нашли все мины!</div>
+            <div style="font-size: 14px; color: #666;">+${winAmount} монет! Баланс: ${userBalance} монет</div>
+        `;
+        
+        saveResult(`💣 Сапёр: Победа! +${winAmount} монет`);
+    }
+}
+
+// ==================== ТРИ В РЯД ====================
+
+let match3Board = [];
+let selectedMatch3Cell = null;
+const match3Symbols = ['🍒', '🍋', '🍉', '⭐', '🔔', '💎'];
+
+function initMatch3() {
+    const board = document.getElementById('match3Board');
+    const resultDiv = document.getElementById('match3Result');
+    board.innerHTML = '';
+    selectedMatch3Cell = null;
+    
+    resultDiv.innerHTML = '<div class="result-text">Выберите два элемента для обмена</div>';
+    
+    // Создаем поле 8x8
+    match3Board = Array(8).fill().map(() => Array(8).fill(''));
+    
+    // Заполняем случайными символами
+    for (let y = 0; y < 8; y++) {
+        for (let x = 0; x < 8; x++) {
+            match3Board[y][x] = match3Symbols[Math.floor(Math.random() * match3Symbols.length)];
+        }
+    }
+    
+    // Создаем клетки
+    for (let y = 0; y < 8; y++) {
+        for (let x = 0; x < 8; x++) {
+            const cell = document.createElement('div');
+            cell.className = 'match3-cell';
+            cell.dataset.x = x;
+            cell.dataset.y = y;
+            cell.textContent = match3Board[y][x];
+            cell.addEventListener('click', () => selectMatch3Cell(x, y));
+            board.appendChild(cell);
+        }
+    }
+}
+
+function selectMatch3Cell(x, y) {
+    const cell = document.querySelector(`.match3-cell[data-x="${x}"][data-y="${y}"]`);
+    
+    if (selectedMatch3Cell === null) {
+        // Первое нажатие - выбираем клетку
+        selectedMatch3Cell = { x, y };
+        cell.classList.add('selected');
+        document.getElementById('match3Result').innerHTML = `
+            <div class="result-text">Теперь выберите соседнюю клетку для обмена</div>
+        `;
+    } else {
+        // Второе нажатие - проверяем можно ли обменять
+        const dx = Math.abs(x - selectedMatch3Cell.x);
+        const dy = Math.abs(y - selectedMatch3Cell.y);
+        
+        if ((dx === 1 && dy === 0) || (dx === 0 && dy === 1)) {
+            // Соседние клетки - производим обмен
+            swapMatch3Cells(selectedMatch3Cell.x, selectedMatch3Cell.y, x, y);
+        } else {
+            document.getElementById('match3Result').innerHTML = `
+                <div class="result-text">Можно обменивать только соседние клетки</div>
+            `;
+        }
+        
+        // Сбрасываем выбор
+        document.querySelectorAll('.match3-cell').forEach(c => c.classList.remove('selected'));
+        selectedMatch3Cell = null;
+    }
+}
+
+function swapMatch3Cells(x1, y1, x2, y2) {
+    // Меняем местами
+    const temp = match3Board[y1][x1];
+    match3Board[y1][x1] = match3Board[y2][x2];
+    match3Board[y2][x2] = temp;
+    
+    // Обновляем отображение
+    document.querySelector(`.match3-cell[data-x="${x1}"][data-y="${y1}"]`).textContent = match3Board[y1][x1];
+    document.querySelector(`.match3-cell[data-x="${x2}"][data-y="${y2}"]`).textContent = match3Board[y2][x2];
+    
+    // Проверяем комбинации
+    checkMatch3Combinations();
+}
+
+function checkMatch3Combinations() {
+    let combinationsFound = 0;
+    let totalScore = 0;
+    
+    // Проверяем горизонтальные комбинации
+    for (let y = 0; y < 8; y++) {
+        for (let x = 0; x < 6; x++) {
+            if (match3Board[y][x] !== '' && 
+                match3Board[y][x] === match3Board[y][x+1] && 
+                match3Board[y][x] === match3Board[y][x+2]) {
+                
+                combinationsFound++;
+                totalScore += 10;
+                
+                // Удаляем комбинацию
+                for (let i = 0; i < 3; i++) {
+                    match3Board[y][x+i] = '';
+                    document.querySelector(`.match3-cell[data-x="${x+i}"][data-y="${y}"]`).textContent = '';
+                }
+            }
+        }
+    }
+    
+    // Проверяем вертикальные комбинации
+    for (let x = 0; x < 8; x++) {
+        for (let y = 0; y < 6; y++) {
+            if (match3Board[y][x] !== '' && 
+                match3Board[y][x] === match3Board[y+1][x] && 
+                match3Board[y][x] === match3Board[y+2][x]) {
+                
+                combinationsFound++;
+                totalScore += 10;
+                
+                // Удаляем комбинацию
+                for (let i = 0; i < 3; i++) {
+                    match3Board[y+i][x] = '';
+                    document.querySelector(`.match3-cell[data-x="${x}"][data-y="${y+i}"]`).textContent = '';
+                }
+            }
+        }
+    }
+    
+    if (combinationsFound > 0) {
+        userBalance += totalScore;
+        updateBalance();
+        
+        document.getElementById('match3Result').innerHTML = `
+            <div class="result-text">🎉 Найдено ${combinationsFound} комбинаций!</div>
+            <div style="font-size: 14px; color: #666;">+${totalScore} монет! Баланс: ${userBalance} монет</div>
+        `;
+        
+        saveResult(`🧩 Три в ряд: ${combinationsFound} комбинаций! +${totalScore} монет`);
+        
+        // Заполняем пустые клетки
+        setTimeout(fillMatch3EmptyCells, 500);
+    }
+}
+
+function fillMatch3EmptyCells() {
+    for (let x = 0; x < 8; x++) {
+        for (let y = 7; y >= 0; y--) {
+            if (match3Board[y][x] === '') {
+                // Сдвигаем элементы вниз
+                for (let ny = y; ny > 0; ny--) {
+                    match3Board[ny][x] = match3Board[ny-1][x];
+                }
+                // Новый элемент сверху
+                match3Board[0][x] = match3Symbols[Math.floor(Math.random() * match3Symbols.length)];
+            }
+        }
+    }
+    
+    // Обновляем отображение
+    for (let y = 0; y < 8; y++) {
+        for (let x = 0; x < 8; x++) {
+            document.querySelector(`.match3-cell[data-x="${x}"][data-y="${y}"]`).textContent = match3Board[y][x];
+        }
+    }
+    
+    // Снова проверяем комбинации
+    setTimeout(checkMatch3Combinations, 300);
 }
 
 // Инициализация
