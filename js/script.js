@@ -1,4 +1,4 @@
-// Система монет с локальным сохранением
+// Система монет
 let userBalance = 100;
 let selectedShopItem = null;
 let currentGame = 'roulette';
@@ -7,28 +7,24 @@ let resultsHistory = [];
 let isStyleEditing = false;
 let selectedElement = null;
 
-function showComingSoon() { return false; }
-// Инициализация данных пользователя
+// Инициализация
 function initUserData() {
     const userData = JSON.parse(localStorage.getItem('taxiUserData')) || {};
     userBalance = userData.balance || 100;
     resultsHistory = userData.history || [];
     updateBalance();
     
-    // Загрузка сохраненных изображений
     const savedImages = JSON.parse(localStorage.getItem('savedImages')) || [];
     savedImages.forEach(imgData => {
         createDraggableImage(imgData.src, imgData);
     });
     
-    // Загрузка сохраненных стилей
     const savedStyles = localStorage.getItem('customStyles');
     if (savedStyles) {
         applyCustomCSS(savedStyles);
     }
 }
 
-// Сохранение данных пользователя
 function saveUserData() {
     const userData = {
         balance: userBalance,
@@ -38,13 +34,15 @@ function saveUserData() {
     localStorage.setItem('taxiUserData', JSON.stringify(userData));
 }
 
-// Обновляем баланс на странице
 function updateBalance() {
-    document.getElementById('balance').textContent = userBalance + ' монет';
+    const balanceElement = document.getElementById('balance');
+    if (balanceElement) {
+        balanceElement.textContent = userBalance + ' монет';
+    }
     saveUserData();
 }
 
-// Создание рулетки с SVG
+// Рулетка
 function createRouletteWheel() {
     const svg = document.getElementById('rouletteSvg');
     if (!svg) return;
@@ -66,9 +64,7 @@ function createRouletteWheel() {
         { coins: 0, text: "0", color: "#8854d0" }
     ];
 
-    const centerX = 200;
-    const centerY = 200;
-    const radius = 180;
+    const centerX = 200, centerY = 200, radius = 180;
     
     segments.forEach((segment, index) => {
         const angle = (index * 30) * Math.PI / 180;
@@ -132,40 +128,32 @@ function spinRoulette() {
     
     const resultDiv = document.getElementById('result');
     const spinBtn = document.getElementById('spinBtn');
-    const wheelElement = document.getElementById('wheel'); // ← переименовал переменную
+    const wheel = document.getElementById('wheel');
     
     spinBtn.disabled = true;
     spinBtn.classList.remove('pulse');
     
-    wheelElement.style.transition = 'none';
-    wheelElement.style.transform = 'rotate(0deg)';
+    wheel.style.transition = 'none';
+    wheel.style.transform = 'rotate(0deg)';
     
     setTimeout(() => {
         const randomIndex = Math.floor(Math.random() * 12);
         const coins = [30, 20, 15, 10, 8, 5, 3, 2, 1, 0, 0, 0][randomIndex];
-        
         const targetAngle = 360 - (randomIndex * 30) - 15;
         const spinDegrees = 5 * 360 + targetAngle;
         
-        wheelElement.style.transition = 'transform 4s cubic-bezier(0.1, 0.3, 0.2, 1)';
-        wheelElement.style.transform = `rotate(${spinDegrees}deg)`;    
+        wheel.style.transition = 'transform 4s cubic-bezier(0.1, 0.3, 0.2, 1)';
+        wheel.style.transform = `rotate(${spinDegrees}deg)`;
+        
         setTimeout(() => {
             userBalance += coins;
             updateBalance();
             
             const segments = [
-                { coins: 30, text: "ДЖЕКПОТ" },
-                { coins: 20, text: "20 МОНЕТ" },
-                { coins: 15, text: "15 МОНЕТ" },
-                { coins: 10, text: "10 МОНЕТ" },
-                { coins: 8, text: "8 МОНЕТ" },
-                { coins: 5, text: "5 МОНЕТ" },
-                { coins: 3, text: "3 МОНЕТЫ" },
-                { coins: 2, text: "2 МОНЕТЫ" },
-                { coins: 1, text: "1 МОНЕТА" },
-                { coins: 0, text: "ПУСТО" },
-                { coins: 0, text: "ПУСТО" },
-                { coins: 0, text: "ПУСТО" }
+                { coins: 30, text: "ДЖЕКПОТ" }, { coins: 20, text: "20 МОНЕТ" }, { coins: 15, text: "15 МОНЕТ" },
+                { coins: 10, text: "10 МОНЕТ" }, { coins: 8, text: "8 МОНЕТ" }, { coins: 5, text: "5 МОНЕТ" },
+                { coins: 3, text: "3 МОНЕТЫ" }, { coins: 2, text: "2 МОНЕТЫ" }, { coins: 1, text: "1 МОНЕТА" },
+                { coins: 0, text: "ПУСТО" }, { coins: 0, text: "ПУСТО" }, { coins: 0, text: "ПУСТО" }
             ];
             
             const wonSegment = segments[randomIndex];
@@ -179,7 +167,6 @@ function spinRoulette() {
             `;
             
             resultDiv.className = 'result ' + (coins > 0 ? 'win-glow' : '');
-            
             saveResult(`🎯 Рулетка: ${message}`);
             
             setTimeout(() => {
@@ -187,18 +174,14 @@ function spinRoulette() {
                 spinBtn.disabled = false;
                 isSpinning = false;
             }, 2000);
-            
         }, 4000);
     }, 50);
 }
 
-// Однорукий бандит
+// Слоты
 const slotSymbols = ['🍒', '🍋', '⭐', '🍉', '🔔', '💎'];
 const slotPayouts = {
-    '🍒🍒🍒': 50,
-    '⭐⭐⭐': 100,
-    '💎💎💎': 200,
-    '🔔🔔🔔': 75
+    '🍒🍒🍒': 50, '⭐⭐⭐': 100, '💎💎💎': 200, '🔔🔔🔔': 75
 };
 
 function spinSlots() {
@@ -216,7 +199,6 @@ function spinSlots() {
     
     const spinDuration = 2000;
     const spinInterval = 100;
-    
     let spins = 0;
     const maxSpins = spinDuration / spinInterval;
     
@@ -257,7 +239,6 @@ function spinSlots() {
             `;
             
             saveResult(`🎰 Слоты: ${winMessage}`);
-            
             spinBtn.disabled = false;
             isSpinning = false;
         }
@@ -275,12 +256,7 @@ function buyItem() {
     if (selectedShopItem === null) return;
     
     const prices = [50, 100, 200, 1000];
-    const items = [
-        "🎁 Промо на 6ч",
-        "☕ Промо на 12ч", 
-        "🚕 Промо на 24ч",
-        "💵 Вывод денег"
-    ];
+    const items = ["🎁 Набор стикеров", "☕ Кофе с водителем", "🚕 Поездка 15 мин", "💵 Вывод денег"];
     
     const price = prices[selectedShopItem];
     const item = items[selectedShopItem];
@@ -306,11 +282,48 @@ function buyItem() {
 }
 
 // Админ панель
+let adminPanelDrag = false;
+let dragOffsetX, dragOffsetY;
+
+function startDrag(e) {
+    if (e.target.closest('.close-btn')) return;
+    
+    adminPanelDrag = true;
+    const panel = document.getElementById('adminPanel');
+    const rect = panel.getBoundingClientRect();
+    dragOffsetX = e.clientX - rect.left;
+    dragOffsetY = e.clientY - rect.top;
+    
+    document.addEventListener('mousemove', onDrag);
+    document.addEventListener('mouseup', stopDrag);
+}
+
+function onDrag(e) {
+    if (!adminPanelDrag) return;
+    
+    const panel = document.getElementById('adminPanel');
+    panel.style.left = (e.clientX - dragOffsetX) + 'px';
+    panel.style.top = (e.clientY - dragOffsetY) + 'px';
+    panel.style.transform = 'none';
+}
+
+function stopDrag() {
+    adminPanelDrag = false;
+    document.removeEventListener('mousemove', onDrag);
+    document.removeEventListener('mouseup', stopDrag);
+}
+
 function showAdminPanel() {
-    document.getElementById('adminPanel').style.display = 'block';
-    // Сбрасываем пароль при открытии
+    const panel = document.getElementById('adminPanel');
+    panel.style.display = 'block';
+    panel.style.left = '50%';
+    panel.style.top = '50%';
+    panel.style.transform = 'translate(-50%, -50%)';
+    
+    document.getElementById('loginTab').style.display = 'block';
+    document.getElementById('adminTabs').style.display = 'none';
     document.getElementById('adminPassword').value = '';
-    document.getElementById('moneyFunctions').style.display = 'none';
+    document.getElementById('adminPassword').focus();
 }
 
 function closeAdminPanel() {
@@ -326,42 +339,44 @@ function handleAdminKeypress(event) {
 
 function checkAdminPassword() {
     const password = document.getElementById('adminPassword').value;
-    // Пароль скрыт в коде для безопасности
-    const correctPassword = '1111'; // В реальном проекте храните это на сервере
+    const correctPassword = '1111';
     
     if (password === correctPassword) {
-        alert('✅ Добро пожаловать!');
+        document.getElementById('loginTab').style.display = 'none';
+        document.getElementById('adminTabs').style.display = 'block';
+        document.getElementById('adminPassword').value = '';
     } else {
         alert('❌ Неверный пароль!');
         document.getElementById('adminPassword').value = '';
+        document.getElementById('adminPassword').focus();
     }
 }
 
 // Функции монет
 function addCoins(amount) {
+    if (!amount || amount <= 0) {
+        alert('❌ Введите корректное количество монет!');
+        return;
+    }
+    
     userBalance += amount;
     updateBalance();
-    alert(`✅ +${amount} монет! Баланс: ${userBalance}`);
+    alert(`✅ Начислено ${amount} монет!\nНовый баланс: ${userBalance} монет`);
     saveResult(`⚙️ Админ: +${amount} монет`);
 }
 
 function addCustomCoins() {
-    const amount = parseInt(document.getElementById('customCoins').value);
-    if (amount > 0) {
-        addCoins(amount);
-        document.getElementById('customCoins').value = '';
-    } else {
-        alert('Введите число больше 0!');
-    }
-}
-
-// Табы
-function openTab(tabName) {
-    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    const amountInput = document.getElementById('customCoins');
+    const amount = parseInt(amountInput.value);
     
-    document.getElementById(tabName).classList.add('active');
-    event.target.classList.add('active');
+    if (!amount || amount <= 0) {
+        alert('❌ Введите число больше 0!');
+        amountInput.focus();
+        return;
+    }
+    
+    addCoins(amount);
+    amountInput.value = '';
 }
 
 // Дизайн
@@ -376,10 +391,8 @@ function applyColors() {
         btn.style.background = `linear-gradient(45deg, ${accent}, #ee5a24)`;
     });
     
-    // Сохраняем цвета
     const colors = { primary, bg, accent };
     localStorage.setItem('customColors', JSON.stringify(colors));
-    
     alert('🎨 Цвета применены и сохранены!');
 }
 
@@ -392,7 +405,7 @@ function resetDesign() {
     alert('🎨 Дизайн сброшен!');
 }
 
-// Изображения
+// Файлы
 function handleDragOver(event) {
     event.preventDefault();
     event.currentTarget.classList.add('dragover');
@@ -409,10 +422,6 @@ function handleDrop(event) {
     const files = event.dataTransfer.files;
     handleImageFiles(files);
 }
-
-document.getElementById('fileInput').addEventListener('change', function(e) {
-    handleImageFiles(e.target.files);
-});
 
 function handleImageFiles(files) {
     for (let file of files) {
@@ -444,7 +453,6 @@ function createDraggableImage(src, savedData = null) {
         img.style.top = savedData.top || '100px';
         img.style.width = savedData.width || '150px';
         img.style.height = savedData.height || 'auto';
-        img.style.transform = savedData.transform || '';
     } else {
         img.style.left = '100px';
         img.style.top = '100px';
@@ -469,7 +477,6 @@ function makeImageDraggableAndResizable(element) {
         pos3 = e.clientX;
         pos4 = e.clientY;
         
-        // Проверяем, кликнули ли на угол для изменения размера
         const rect = element.getBoundingClientRect();
         const cornerSize = 20;
         
@@ -487,7 +494,6 @@ function makeImageDraggableAndResizable(element) {
         e.preventDefault();
         
         if (isResizing) {
-            // Изменение размера
             const newWidth = e.clientX - element.offsetLeft;
             const newHeight = e.clientY - element.offsetTop;
             
@@ -496,7 +502,6 @@ function makeImageDraggableAndResizable(element) {
                 element.style.height = newHeight + 'px';
             }
         } else {
-            // Перетаскивание
             pos1 = pos3 - e.clientX;
             pos2 = pos4 - e.clientY;
             pos3 = e.clientX;
@@ -521,8 +526,7 @@ function saveImageStructure() {
         left: img.style.left,
         top: img.style.top,
         width: img.style.width,
-        height: img.style.height,
-        transform: img.style.transform
+        height: img.style.height
     }));
     
     localStorage.setItem('savedImages', JSON.stringify(imageData));
@@ -532,10 +536,7 @@ function saveImageStructure() {
 function loadImageStructure() {
     const savedImages = JSON.parse(localStorage.getItem('savedImages')) || [];
     
-    // Удаляем текущие изображения
     document.querySelectorAll('.draggable-image').forEach(img => img.remove());
-    
-    // Создаем сохраненные изображения
     savedImages.forEach(imgData => {
         createDraggableImage(imgData.src, imgData);
     });
@@ -544,59 +545,6 @@ function loadImageStructure() {
 }
 
 // Стили
-function exportStyles() {
-    const styles = {
-        customCSS: localStorage.getItem('customStyles') || '',
-        colors: JSON.parse(localStorage.getItem('customColors')) || {}
-    };
-    
-    const dataStr = JSON.stringify(styles, null, 2);
-    const dataBlob = new Blob([dataStr], {type: 'application/json'});
-    
-    const url = URL.createObjectURL(dataBlob);
-    const link = document.createElement('a');
-    link.download = 'taxi-casino-styles.json';
-    link.href = url;
-    link.click();
-    
-    alert('📥 Стили экспортированы!');
-}
-
-function importStyles() {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.json';
-    
-    input.onchange = e => {
-        const file = e.target.files[0];
-        const reader = new FileReader();
-        
-        reader.onload = function(e) {
-            try {
-                const styles = JSON.parse(e.target.result);
-                
-                if (styles.customCSS) {
-                    localStorage.setItem('customStyles', styles.customCSS);
-                    applyCustomCSS(styles.customCSS);
-                }
-                
-                if (styles.colors) {
-                    localStorage.setItem('customColors', JSON.stringify(styles.colors));
-                    applyColorsFromStorage();
-                }
-                
-                alert('📤 Стили импортированы и применены!');
-            } catch (error) {
-                alert('❌ Ошибка при импорте стилей!');
-            }
-        };
-        
-        reader.readAsText(file);
-    };
-    
-    input.click();
-}
-
 function applyCustomCSS(css) {
     let styleElement = document.getElementById('custom-styles');
     if (!styleElement) {
@@ -605,16 +553,7 @@ function applyCustomCSS(css) {
         document.head.appendChild(styleElement);
     }
     styleElement.textContent = css;
-}
-
-function applyColorsFromStorage() {
-    const colors = JSON.parse(localStorage.getItem('customColors'));
-    if (colors) {
-        document.getElementById('primaryColor').value = colors.primary;
-        document.getElementById('bgColor').value = colors.bg;
-        document.getElementById('accentColor').value = colors.accent;
-        applyColors();
-    }
+    localStorage.setItem('customStyles', css);
 }
 
 function enableStyleEditing() {
@@ -628,7 +567,6 @@ function enableStyleEditing() {
         
         document.getElementById('styleEditor').style.display = 'block';
         document.getElementById('cssEditor').value = localStorage.getItem('customStyles') || '';
-        
         alert('✏️ Режим редактирования включен! Кликайте на элементы для изменения.');
     } else {
         disableStyleEditing();
@@ -650,15 +588,12 @@ function handleElementClick(event) {
     event.stopPropagation();
     selectedElement = event.currentTarget;
     
-    // Убираем выделение с других элементов
     document.querySelectorAll('.editable-element').forEach(el => {
         el.classList.remove('editing');
     });
     
-    // Выделяем текущий элемент
     selectedElement.classList.add('editing');
     
-    // Показываем контекстное меню
     const contextMenu = document.getElementById('contextMenu');
     contextMenu.style.display = 'block';
     contextMenu.style.left = event.pageX + 'px';
@@ -670,12 +605,10 @@ function editElementStyle() {
     
     const currentStyle = window.getComputedStyle(selectedElement);
     const cssText = `
-/* Стили для ${selectedElement.className} */
 .${selectedElement.className.split(' ')[0]} {
     background: ${currentStyle.background};
     color: ${currentStyle.color};
     border: ${currentStyle.border};
-    /* Добавьте другие свойства по необходимости */
 }
     `.trim();
     
@@ -700,44 +633,32 @@ function hideContextMenu() {
 
 function applyCustomStyles() {
     const css = document.getElementById('cssEditor').value;
-    localStorage.setItem('customStyles', css);
     applyCustomCSS(css);
     alert('✅ Пользовательские стили применены и сохранены!');
 }
 
-// Игры
+// Утилиты
+function openTab(tabName) {
+    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    
+    document.getElementById(tabName).classList.add('active');
+    event.target.classList.add('active');
+}
+
 function showGame(game) {
     currentGame = game;
     
-    // Скрываем все игровые области
-    const areas = document.querySelectorAll('.game-area');
-    if (areas) {
-        areas.forEach(area => area.classList.remove('active'));
-    }
+    document.querySelectorAll('.game-area').forEach(area => area.classList.remove('active'));
+    document.querySelectorAll('.game-btn').forEach(btn => btn.classList.remove('active'));
     
-    // Показываем выбранную игру
     const gameElement = document.getElementById(`${game}-game`);
-    if (gameElement) {
-        gameElement.classList.add('active');
-    }
+    if (gameElement) gameElement.classList.add('active');
+    if (event && event.target) event.target.classList.add('active');
     
-    // Обновляем активные кнопки
-    const buttons = document.querySelectorAll('.game-btn');
-    if (buttons) {
-        buttons.forEach(btn => btn.classList.remove('active'));
-        if (event && event.target) {
-            event.target.classList.add('active');
-        }
-    }
-    
-    // Инициализация игр
-    if (game === 'roulette') {
-        createRouletteWheel();
-    } else if (game === 'minesweeper') {
-        initMinesweeper();
-    } else if (game === 'match3') {
-        initMatch3();
-    }
+    if (game === 'roulette') createRouletteWheel();
+    else if (game === 'minesweeper') initMinesweeper();
+    else if (game === 'match3') initMatch3();
 }
 
 function saveResult(text) {
@@ -784,11 +705,7 @@ function toggleHistory() {
     }
 }
 
-// ==================== САПЁР ====================
-
-let minesweeperBoard = [];
-let minesweeperGameOver = false;
-
+// Игры
 function initMinesweeper() {
     const board = document.getElementById('minesweeperBoard');
     const resultDiv = document.getElementById('minesweeperResult');
@@ -911,7 +828,8 @@ function checkMinesweeperWin() {
     }
 }
 
-// ==================== ТРИ В РЯД ====================
+let minesweeperBoard = [];
+let minesweeperGameOver = false;
 
 let match3Board = [];
 let selectedMatch3Cell = null;
@@ -1073,19 +991,24 @@ function createFloatingElements() {
     }
 }
 
-// Закрытие контекстного меню при клике вне его
-document.addEventListener('click', function(e) {
-    if (!e.target.closest('#contextMenu') && !e.target.closest('.editable-element')) {
-        hideContextMenu();
-    }
-});
-
 // Инициализация
 document.addEventListener('DOMContentLoaded', function() {
     createFloatingElements();
     createRouletteWheel();
     initUserData();
     
-    // Загружаем сохраненные цвета
-    applyColorsFromStorage();
+    // Обработчик для fileInput
+    const fileInput = document.getElementById('fileInput');
+    if (fileInput) {
+        fileInput.addEventListener('change', function(e) {
+            handleImageFiles(e.target.files);
+        });
+    }
+    
+    // Закрытие контекстного меню
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('#contextMenu') && !e.target.closest('.editable-element')) {
+            hideContextMenu();
+        }
+    });
 });
