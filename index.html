@@ -136,14 +136,30 @@
     </div>
 
     <!-- Админ панель -->
-    <div class="admin-panel" id="adminPanel">
-        <h3>⚙️ Админ Панель</h3>
-        <input type="password" class="admin-input" id="adminPassword" placeholder="Введите пароль" onkeypress="handleAdminKeypress(event)">
-        <div class="admin-buttons">
-            <button class="admin-btn-panel cancel-btn" onclick="closeAdminPanel()">Отмена</button>
-            <button class="admin-btn-panel confirm-btn" onclick="checkAdminPassword()">Подтвердить</button>
-        </div>
+<div class="admin-panel" id="adminPanel">
+    <h3>⚙️ Админ Панель</h3>
+    <input type="password" class="admin-input" id="adminPassword" placeholder="Введите пароль" onkeypress="handleAdminKeypress(event)">
+    
+    <!-- СТАРАЯ ФУНКЦИЯ - +1000 монет -->
+    <div class="admin-buttons">
+        <button class="admin-btn-panel cancel-btn" onclick="closeAdminPanel()">Отмена</button>
+        <button class="admin-btn-panel confirm-btn" onclick="checkAdminPassword()">Получить 1000 монет</button>
     </div>
+    
+    <!-- НОВЫЕ ФУНКЦИИ - показываются после ввода пароля -->
+    <div id="adminFunctions" style="display: none; margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
+        <h4>🎨 Дополнительные функции</h4>
+        <button class="admin-btn-panel" onclick="showDesignPanel()" style="background: #9C27B0; margin: 5px;">
+            🎨 Конструктор дизайна
+        </button>
+        <button class="admin-btn-panel" onclick="downloadUpdatedSite()" style="background: #4CAF50; margin: 5px;">
+            📥 Скачать сайт
+        </button>
+        <button class="admin-btn-panel" onclick="addMoreCoins()" style="background: #FF9800; margin: 5px;">
+            🪙 Добавить еще 1000 монет
+        </button>
+    </div>
+</div>
 
     <script src="js/script.js"></script>
 </body>
