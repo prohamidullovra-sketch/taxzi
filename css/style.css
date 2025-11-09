@@ -10,7 +10,6 @@ body {
     min-height: 100vh;
     padding: 20px;
     overflow-x: hidden;
-    color: #333;
 }
 
 .game-hub {
@@ -21,7 +20,7 @@ body {
     margin: 0 auto;
 }
 
-/* Балланс пользователя */
+/* Стили баланса */
 .balance-container {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(20px);
@@ -96,11 +95,6 @@ body {
     background: linear-gradient(45deg, #ff6b6b, #ee5a24);
 }
 
-.admin-btn {
-    margin-top: 20px;
-    background: linear-gradient(45deg, #ff4757, #ff3742) !important;
-}
-
 /* Основной контент */
 .main-content {
     background: rgba(255, 255, 255, 0.95);
@@ -162,21 +156,6 @@ body {
     box-shadow: 0 15px 30px rgba(0,0,0,0.3);
     border: 10px solid white;
     overflow: hidden;
-    transform-origin: center center;
-}
-
-.svg-container {
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-#rouletteSvg {
-    display: block;
     transform-origin: center center;
 }
 
@@ -333,11 +312,6 @@ body {
     box-shadow: 0 8px 20px rgba(77, 205, 196, 0.4);
 }
 
-.buy-btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
 /* Игры */
 .game-area {
     display: none;
@@ -490,7 +464,7 @@ button {
     transform: translate(-50%, -50%);
     background: rgba(255, 255, 255, 0.98);
     backdrop-filter: blur(20px);
-    padding: 30px;
+    padding: 0;
     border-radius: 20px;
     box-shadow: 0 25px 50px rgba(0,0,0,0.3);
     z-index: 1000;
@@ -501,25 +475,56 @@ button {
     overflow-y: auto;
 }
 
-.admin-panel h3 {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #2d3436;
+.admin-header {
+    cursor: move;
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    color: white;
+    padding: 20px;
+    border-radius: 20px 20px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
 }
 
-.admin-input {
+.admin-header h3 {
+    margin: 0;
+    color: white;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.close-btn:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.admin-panel .admin-input {
     width: 100%;
     padding: 15px;
     border: 2px solid #ddd;
     border-radius: 10px;
     font-size: 16px;
-    margin-bottom: 15px;
+    margin: 15px 0;
     text-align: center;
 }
 
 .admin-buttons {
     display: flex;
     gap: 15px;
+    margin: 20px 0;
 }
 
 .admin-btn-panel {
@@ -542,16 +547,16 @@ button {
     color: white;
 }
 
-/* Стили конструктора */
+/* Конструктор */
 .admin-tabs {
     display: flex;
-    margin-bottom: 20px;
+    margin: 0;
     border-bottom: 2px solid #eee;
 }
 
 .tab-btn {
     flex: 1;
-    padding: 12px;
+    padding: 15px;
     border: none;
     background: none;
     cursor: pointer;
@@ -567,6 +572,7 @@ button {
 
 .tab-content {
     display: none;
+    padding: 20px;
 }
 
 .tab-content.active {
@@ -656,26 +662,10 @@ button {
     margin: 20px 0;
 }
 
-.image-controls {
+.file-controls {
     display: flex;
     gap: 10px;
     margin: 15px 0;
-}
-
-.style-controls {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.image-hint, .visual-editor-hint {
-    background: #e3f2fd;
-    padding: 10px;
-    border-radius: 8px;
-    text-align: center;
-    font-size: 14px;
-    color: #1976d2;
-    margin-top: 15px;
 }
 
 /* Перетаскиваемые изображения */
@@ -690,11 +680,6 @@ button {
     max-width: 300px;
     max-height: 300px;
     z-index: 1000;
-}
-
-.draggable-image.editing {
-    border: 3px dashed #ff6b6b;
-    box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
 }
 
 /* Контекстное меню */
@@ -718,20 +703,27 @@ button {
     background: #f8f9fa;
 }
 
-/* Стиль для редактируемых элементов */
-.editable-element {
-    position: relative;
-    border: 2px dashed transparent;
-    transition: border 0.3s;
+/* Кнопка админ-панели */
+.admin-btn-floating {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #ff4757, #ff3742);
+    color: white;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 5px 20px rgba(255, 71, 87, 0.5);
+    z-index: 999;
+    transition: all 0.3s ease;
 }
 
-.editable-element:hover {
-    border-color: #667eea;
-}
-
-.editable-element.editing {
-    border: 2px dashed #ff6b6b;
-    box-shadow: 0 0 15px rgba(255, 107, 107, 0.3);
+.admin-btn-floating:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(255, 71, 87, 0.6);
 }
 
 /* Анимации */
