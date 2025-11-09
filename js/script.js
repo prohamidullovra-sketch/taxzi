@@ -7,6 +7,8 @@ let resultsHistory = [];
 let isStyleEditing = false;
 let selectedElement = null;
 
+// Фикс ошибок
+function showComingSoon() { return false; }
 // Инициализация данных пользователя
 function initUserData() {
     const userData = JSON.parse(localStorage.getItem('taxiUserData')) || {};
@@ -131,10 +133,12 @@ function spinRoulette() {
     
     const resultDiv = document.getElementById('result');
     const spinBtn = document.getElementById('spinBtn');
+    const wheel = document.getElementById('wheel');
+    
+    if (!spinBtn || !wheel) return;
     
     spinBtn.disabled = true;
     spinBtn.classList.remove('pulse');
-    
     const wheel = document.getElementById('wheel');
     
     wheel.style.transition = 'none';
@@ -716,17 +720,28 @@ function applyCustomStyles() {
 function showGame(game) {
     currentGame = game;
     
-    document.querySelectorAll('.game-area').forEach(area => {
-        area.classList.remove('active');
-    });
+    // Скрываем все игровые области
+    const areas = document.querySelectorAll('.game-area');
+    if (areas) {
+        areas.forEach(area => area.classList.remove('active'));
+    }
     
-    document.getElementById(`${game}-game`).classList.add('active');
+    // Показываем выбранную игру
+    const gameElement = document.getElementById(`${game}-game`);
+    if (gameElement) {
+        gameElement.classList.add('active');
+    }
     
-    document.querySelectorAll('.game-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    event.target.classList.add('active');
+    // Обновляем активные кнопки
+    const buttons = document.querySelectorAll('.game-btn');
+    if (buttons) {
+        buttons.forEach(btn => btn.classList.remove('active'));
+        if (event && event.target) {
+            event.target.classList.add('active');
+        }
+    }
     
+    // Инициализация игр
     if (game === 'roulette') {
         createRouletteWheel();
     } else if (game === 'minesweeper') {
