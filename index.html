@@ -15,10 +15,10 @@
             <div class="balance-container">
                 <div>Ваш баланс</div>
                 <div class="balance" id="balance">0 монет</div>
-                <div style="font-size: 12px; color: #666;">10 монет = 1 рубль</div>
+                <div class="exchange-rate">10 монет = 1 рубль</div>
             </div>
 
-            <h2>🎮 Игровой Хаб</h2>
+            <h2 class="sidebar-title">🎮 Игровой Хаб</h2>
             <div class="game-buttons">
                 <button class="game-btn active" onclick="showGame('roulette')">🎯 Такси Рулетка</button>
                 <button class="game-btn" onclick="showGame('minesweeper')">💣 Сапёр</button>
@@ -76,7 +76,7 @@
             <!-- Сапер -->
             <div class="game-area" id="minesweeper-game">
                 <div class="game-header">
-                    <div>💣</div>
+                    <div class="game-icon">💣</div>
                     <h1>Сапёр</h1>
                     <p class="subtitle">Найдите все мины и заработайте монеты!</p>
                 </div>
@@ -92,7 +92,7 @@
             <!-- Три в ряд -->
             <div class="game-area" id="match3-game">
                 <div class="game-header">
-                    <div>🧩</div>
+                    <div class="game-icon">🧩</div>
                     <h1>Три в ряд</h1>
                     <p class="subtitle">Собирайте линии из 3+ одинаковых элементов!</p>
                 </div>
@@ -112,19 +112,19 @@
                 <h3>🛍️ Магазин призов</h3>
                 <div class="shop-items">
                     <div class="shop-item" onclick="selectShopItem(0)">
-                        <div>Промо на 6ч</div>
+                        <div class="item-name">Промо на 6ч</div>
                         <div class="item-price">50 монет</div>
                     </div>
                     <div class="shop-item" onclick="selectShopItem(1)">
-                        <div>Промо на 12ч</div>
+                        <div class="item-name">Промо на 12ч</div>
                         <div class="item-price">100 монет</div>
                     </div>
                     <div class="shop-item" onclick="selectShopItem(2)">
-                        <div>Промо на 24ч</div>
+                        <div class="item-name">Промо на 24ч</div>
                         <div class="item-price">200 монет</div>
                     </div>
                     <div class="shop-item" onclick="selectShopItem(3)">
-                        <div>Вывод денег</div>
+                        <div class="item-name">Вывод денег</div>
                         <div class="item-price">1000 монет</div>
                     </div>
                 </div>
@@ -136,81 +136,81 @@
     </div>
 
     <!-- Админ панель -->
-<div class="admin-panel" id="adminPanel">
-    <h3>🎨 Визуальный конструктор</h3>
-    
-    <div class="admin-tabs">
-        <button class="tab-btn active" onclick="openTab('moneyTab')">💰 Монеты</button>
-        <button class="tab-btn" onclick="openTab('designTab')">🎨 Дизайн</button>
-        <button class="tab-btn" onclick="openTab('imagesTab')">🖼️ Изображения</button>
-    </div>
-
-    <!-- Вкладка монет -->
-    <div id="moneyTab" class="tab-content active">
-        <input type="password" class="admin-input" id="adminPassword" placeholder="Пароль: 1111" onkeypress="handleAdminKeypress(event)">
-        <div class="admin-buttons">
-            <button class="admin-btn-panel cancel-btn" onclick="closeAdminPanel()">Закрыть</button>
-            <button class="admin-btn-panel confirm-btn" onclick="checkAdminPassword()">Войти</button>
-        </div>
+    <div class="admin-panel" id="adminPanel">
+        <h3>🎨 Визуальный конструктор</h3>
         
-        <div id="moneyFunctions" style="display: none; margin-top: 20px;">
-            <div class="coins-grid">
-                <button class="coin-btn" onclick="addCoins(1000)">+1,000</button>
-                <button class="coin-btn" onclick="addCoins(5000)">+5,000</button>
-                <button class="coin-btn" onclick="addCoins(10000)">+10,000</button>
-                <button class="coin-btn" onclick="addCoins(50000)">+50,000</button>
-            </div>
-            <div class="custom-coins">
-                <input type="number" id="customCoins" placeholder="Свое количество" class="admin-input">
-                <button class="admin-btn-panel confirm-btn" onclick="addCustomCoins()">Добавить</button>
-            </div>
+        <div class="admin-tabs">
+            <button class="tab-btn active" onclick="openTab('moneyTab')">💰 Монеты</button>
+            <button class="tab-btn" onclick="openTab('designTab')">🎨 Дизайн</button>
+            <button class="tab-btn" onclick="openTab('imagesTab')">🖼️ Изображения</button>
         </div>
-    </div>
 
-    <!-- Вкладка дизайна -->
-    <div id="designTab" class="tab-content">
-        <div class="color-picker-group">
-            <div class="color-picker">
-                <label>Основной цвет:</label>
-                <input type="color" id="primaryColor" value="#667eea" class="color-input">
+        <!-- Вкладка монет -->
+        <div id="moneyTab" class="tab-content active">
+            <input type="password" class="admin-input" id="adminPassword" placeholder="Пароль: 1111" onkeypress="handleAdminKeypress(event)">
+            <div class="admin-buttons">
+                <button class="admin-btn-panel cancel-btn" onclick="closeAdminPanel()">Закрыть</button>
+                <button class="admin-btn-panel confirm-btn" onclick="checkAdminPassword()">Войти</button>
             </div>
-            <div class="color-picker">
-                <label>Фон:</label>
-                <input type="color" id="bgColor" value="#764ba2" class="color-input">
-            </div>
-            <div class="color-picker">
-                <label>Акцент:</label>
-                <input type="color" id="accentColor" value="#ff6b6b" class="color-input">
+            
+            <div id="moneyFunctions" style="display: none; margin-top: 20px;">
+                <div class="coins-grid">
+                    <button class="coin-btn" onclick="addCoins(1000)">+1,000</button>
+                    <button class="coin-btn" onclick="addCoins(5000)">+5,000</button>
+                    <button class="coin-btn" onclick="addCoins(10000)">+10,000</button>
+                    <button class="coin-btn" onclick="addCoins(50000)">+50,000</button>
+                </div>
+                <div class="custom-coins">
+                    <input type="number" id="customCoins" placeholder="Свое количество" class="admin-input">
+                    <button class="admin-btn-panel confirm-btn" onclick="addCustomCoins()">Добавить</button>
+                </div>
             </div>
         </div>
-        <button class="admin-btn-panel confirm-btn" onclick="applyColors()">Применить цвета</button>
-        <button class="admin-btn-panel" onclick="resetDesign()" style="background: #6c757d;">Сбросить</button>
-    </div>
 
-    <!-- Вкладка изображений -->
-    <div id="imagesTab" class="tab-content">
-        <div class="upload-section">
-            <div class="upload-area" id="uploadArea" 
-                 ondrop="handleDrop(event)" 
-                 ondragover="handleDragOver(event)"
-                 onclick="document.getElementById('fileInput').click()">
-                <div class="upload-icon">📁</div>
-                <div>Перетащите сюда изображения</div>
-                <div class="upload-subtitle">или нажмите для выбора</div>
+        <!-- Вкладка дизайна -->
+        <div id="designTab" class="tab-content">
+            <div class="color-picker-group">
+                <div class="color-picker">
+                    <label>Основной цвет:</label>
+                    <input type="color" id="primaryColor" value="#667eea" class="color-input">
+                </div>
+                <div class="color-picker">
+                    <label>Фон:</label>
+                    <input type="color" id="bgColor" value="#764ba2" class="color-input">
+                </div>
+                <div class="color-picker">
+                    <label>Акцент:</label>
+                    <input type="color" id="accentColor" value="#ff6b6b" class="color-input">
+                </div>
             </div>
-            <input type="file" id="fileInput" accept="image/*" multiple style="display: none;">
+            <button class="admin-btn-panel confirm-btn" onclick="applyColors()">Применить цвета</button>
+            <button class="admin-btn-panel" onclick="resetDesign()" style="background: #6c757d;">Сбросить</button>
         </div>
-        
-        <div class="url-section">
-            <input type="text" id="imageUrl" placeholder="Вставьте URL изображения" class="admin-input">
-            <button class="admin-btn-panel confirm-btn" onclick="addImageFromUrl()">Добавить по ссылке</button>
-        </div>
-        
-        <div class="image-hint">
-            💡 После добавления: перетаскивайте мышкой и меняйте размер углами
+
+        <!-- Вкладка изображений -->
+        <div id="imagesTab" class="tab-content">
+            <div class="upload-section">
+                <div class="upload-area" id="uploadArea" 
+                     ondrop="handleDrop(event)" 
+                     ondragover="handleDragOver(event)"
+                     onclick="document.getElementById('fileInput').click()">
+                    <div class="upload-icon">📁</div>
+                    <div>Перетащите сюда изображения</div>
+                    <div class="upload-subtitle">или нажмите для выбора</div>
+                </div>
+                <input type="file" id="fileInput" accept="image/*" multiple style="display: none;">
+            </div>
+            
+            <div class="url-section">
+                <input type="text" id="imageUrl" placeholder="Вставьте URL изображения" class="admin-input">
+                <button class="admin-btn-panel confirm-btn" onclick="addImageFromUrl()">Добавить по ссылке</button>
+            </div>
+            
+            <div class="image-hint">
+                💡 После добавления: перетаскивайте мышкой и меняйте размер углами
+            </div>
         </div>
     </div>
-</div>
 
     <script src="js/script.js"></script>
 </body>
