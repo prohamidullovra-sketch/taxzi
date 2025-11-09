@@ -295,12 +295,10 @@ function buyItem() {
 // Админ панель
 function showAdminPanel() {
     document.getElementById('adminPanel').style.display = 'block';
-    document.getElementById('adminPassword').focus();
 }
 
 function closeAdminPanel() {
     document.getElementById('adminPanel').style.display = 'none';
-    document.getElementById('adminPassword').value = '';
 }
 
 function handleAdminKeypress(event) {
@@ -309,16 +307,13 @@ function handleAdminKeypress(event) {
     }
 }
 
-// Админ функции
 function checkAdminPassword() {
     const password = document.getElementById('adminPassword').value;
     if (password === '1111') {
-        // Даем 1000 монет при входе
         userBalance += 1000;
         updateBalance();
         
-        // Показываем дополнительные функции
-        document.getElementById('adminFunctions').style.display = 'block';
+        document.getElementById('moneyFunctions').style.display = 'block';
         
         alert('✅ Админ доступ открыт! +1000 монет');
         saveResult('⚙️ Админ: вход +1000 монет');
@@ -344,59 +339,114 @@ function addCustomCoins() {
     }
 }
 
-// Функции дизайна
-function changeBackground() {
-    const colors = ['#667eea', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#a29bfe'];
-    const randomColor = colors[Math.floor(Math.random() * colors.length)];
-    document.body.style.background = `linear-gradient(135deg, ${randomColor} 0%, #764ba2 100%)`;
-    alert('🎨 Фон изменен!');
+// Табы
+function openTab(tabName) {
+    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    
+    document.getElementById(tabName).classList.add('active');
+    event.target.classList.add('active');
+}
+
+// Дизайн
+function applyColors() {
+    const primary = document.getElementById('primaryColor').value;
+    const bg = document.getElementById('bgColor').value;
+    const accent = document.getElementById('accentColor').value;
+    
+    document.body.style.background = `linear-gradient(135deg, ${primary} 0%, ${bg} 100%)`;
+    
+    document.querySelectorAll('.spin-btn').forEach(btn => {
+        btn.style.background = `linear-gradient(45deg, ${accent}, #ee5a24)`;
+    });
+    
+    alert('🎨 Цвета применены!');
 }
 
 function resetDesign() {
     document.body.style.background = '';
+    document.querySelectorAll('.spin-btn').forEach(btn => {
+        btn.style.background = '';
+    });
     alert('🎨 Дизайн сброшен!');
 }
 
-// Функции изображений
-function addHeaderImage() {
-    const imageUrl = document.getElementById('imageUrlInput').value;
-    if (imageUrl) {
-        const header = document.querySelector('.game-header');
-        const img = document.createElement('img');
-        img.src = imageUrl;
-        img.style.maxWidth = '200px';
-        img.style.margin = '10px auto';
-        img.style.borderRadius = '10px';
-        header.appendChild(img);
-        alert('🖼️ Изображение добавлено в шапку!');
-    } else {
-        alert('Введите URL изображения!');
+// Изображения
+function handleDragOver(event) {
+    event.preventDefault();
+    event.currentTarget.classList.add('dragover');
+}
+
+function handleDrop(event) {
+    event.preventDefault();
+    event.currentTarget.classList.remove('dragover');
+    
+    const files = event.dataTransfer.files;
+    handleImageFiles(files);
+}
+
+document.getElementById('fileInput').addEventListener('change', function(e) {
+    handleImageFiles(e.target.files);
+});
+
+function handleImageFiles(files) {
+    for (let file of files) {
+        if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                createDraggableImage(e.target.result);
+            };
+            reader.readAsDataURL(file);
+        }
     }
 }
 
-// Скачать сайт
-function downloadSite() {
-    const htmlContent = document.documentElement.outerHTML;
-    const blob = new Blob([htmlContent], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'taxi-casino-hub.html';
-    link.click();
-    
-    URL.revokeObjectURL(url);
-    alert('📥 Сайт скачан!');
-}
-
-// Остальные функции админ панели остаются без изменений
-function handleAdminKeypress(event) {
-    if (event.key === 'Enter') {
-        checkAdminPassword();
+function addImageFromUrl() {
+    const url = document.getElementById('imageUrl').value;
+    if (url) {
+        createDraggableImage(url);
+        document.getElementById('imageUrl').value = '';
     }
 }
 
-// Переключение игр
+function createDraggableImage(src) {
+    const img = document.createElement('img');
+    img.src = src;
+    img.className = 'draggable-image';
+    img.style.left = '100px';
+    img.style.top = '100px';
+    img.style.width = '150px';
+    
+    let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+    img.onmousedown = dragMouseDown;
+    
+    function dragMouseDown(e) {
+        e.preventDefault();
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        document.onmouseup = closeDragElement;
+        document.onmousemove = elementDrag;
+    }
+    
+    function elementDrag(e) {
+        e.preventDefault();
+        pos1 = pos3 - e.clientX;
+        pos2 = pos4 - e.clientY;
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        img.style.top = (img.offsetTop - pos2) + "px";
+        img.style.left = (img.offsetLeft - pos1) + "px";
+    }
+    
+    function closeDragElement() {
+        document.onmouseup = null;
+        document.onmousemove = null;
+    }
+    
+    document.body.appendChild(img);
+}
+
+// Игры
 function showGame(game) {
     currentGame = game;
     
@@ -493,10 +543,8 @@ function initMinesweeper() {
     
     resultDiv.innerHTML = '<div class="result-text">Найдите все безопасные клетки!</div>';
     
-    // Создаем поле 8x8 с 10 минами
     minesweeperBoard = Array(8).fill().map(() => Array(8).fill(0));
     
-    // Расставляем мины
     let minesPlaced = 0;
     while (minesPlaced < 10) {
         const x = Math.floor(Math.random() * 8);
@@ -507,7 +555,6 @@ function initMinesweeper() {
         }
     }
     
-    // Создаем клетки
     for (let y = 0; y < 8; y++) {
         for (let x = 0; x < 8; x++) {
             const cell = document.createElement('div');
@@ -529,7 +576,6 @@ function revealMinesweeperCell(x, y) {
     cell.classList.add('revealed');
     
     if (minesweeperBoard[y][x] === 'X') {
-        // Игрок наступил на мину
         cell.classList.add('mine');
         cell.textContent = '💣';
         minesweeperGameOver = true;
@@ -539,7 +585,6 @@ function revealMinesweeperCell(x, y) {
             <div style="font-size: 14px; color: #666;">Начните новую игру</div>
         `;
         
-        // Показываем все мины
         document.querySelectorAll('.minesweeper-cell').forEach(cell => {
             const x = parseInt(cell.dataset.x);
             const y = parseInt(cell.dataset.y);
@@ -549,7 +594,6 @@ function revealMinesweeperCell(x, y) {
             }
         });
     } else {
-        // Подсчитываем мины вокруг
         let mineCount = 0;
         for (let dy = -1; dy <= 1; dy++) {
             for (let dx = -1; dx <= 1; dx++) {
@@ -565,12 +609,10 @@ function revealMinesweeperCell(x, y) {
         
         if (mineCount > 0) {
             cell.textContent = mineCount;
-            // Разные цвета для разных чисел
             const colors = ['', 'blue', 'green', 'red', 'purple', 'maroon', 'turquoise', 'black', 'gray'];
             cell.style.color = colors[mineCount];
         }
         
-        // Если нет мин вокруг, открываем соседние клетки
         if (mineCount === 0) {
             for (let dy = -1; dy <= 1; dy++) {
                 for (let dx = -1; dx <= 1; dx++) {
@@ -585,7 +627,6 @@ function revealMinesweeperCell(x, y) {
             }
         }
         
-        // Проверяем победу
         checkMinesweeperWin();
     }
 }
@@ -602,7 +643,6 @@ function checkMinesweeperWin() {
     }
     
     if (unrevealedSafeCells === 0) {
-        // Победа!
         minesweeperGameOver = true;
         const winAmount = 30;
         userBalance += winAmount;
@@ -631,17 +671,14 @@ function initMatch3() {
     
     resultDiv.innerHTML = '<div class="result-text">Выберите два элемента для обмена</div>';
     
-    // Создаем поле 8x8
     match3Board = Array(8).fill().map(() => Array(8).fill(''));
     
-    // Заполняем случайными символами
     for (let y = 0; y < 8; y++) {
         for (let x = 0; x < 8; x++) {
             match3Board[y][x] = match3Symbols[Math.floor(Math.random() * match3Symbols.length)];
         }
     }
     
-    // Создаем клетки
     for (let y = 0; y < 8; y++) {
         for (let x = 0; x < 8; x++) {
             const cell = document.createElement('div');
@@ -659,19 +696,16 @@ function selectMatch3Cell(x, y) {
     const cell = document.querySelector(`.match3-cell[data-x="${x}"][data-y="${y}"]`);
     
     if (selectedMatch3Cell === null) {
-        // Первое нажатие - выбираем клетку
         selectedMatch3Cell = { x, y };
         cell.classList.add('selected');
         document.getElementById('match3Result').innerHTML = `
             <div class="result-text">Теперь выберите соседнюю клетку для обмена</div>
         `;
     } else {
-        // Второе нажатие - проверяем можно ли обменять
         const dx = Math.abs(x - selectedMatch3Cell.x);
         const dy = Math.abs(y - selectedMatch3Cell.y);
         
         if ((dx === 1 && dy === 0) || (dx === 0 && dy === 1)) {
-            // Соседние клетки - производим обмен
             swapMatch3Cells(selectedMatch3Cell.x, selectedMatch3Cell.y, x, y);
         } else {
             document.getElementById('match3Result').innerHTML = `
@@ -679,23 +713,19 @@ function selectMatch3Cell(x, y) {
             `;
         }
         
-        // Сбрасываем выбор
         document.querySelectorAll('.match3-cell').forEach(c => c.classList.remove('selected'));
         selectedMatch3Cell = null;
     }
 }
 
 function swapMatch3Cells(x1, y1, x2, y2) {
-    // Меняем местами
     const temp = match3Board[y1][x1];
     match3Board[y1][x1] = match3Board[y2][x2];
     match3Board[y2][x2] = temp;
     
-    // Обновляем отображение
     document.querySelector(`.match3-cell[data-x="${x1}"][data-y="${y1}"]`).textContent = match3Board[y1][x1];
     document.querySelector(`.match3-cell[data-x="${x2}"][data-y="${y2}"]`).textContent = match3Board[y2][x2];
     
-    // Проверяем комбинации
     checkMatch3Combinations();
 }
 
@@ -703,7 +733,6 @@ function checkMatch3Combinations() {
     let combinationsFound = 0;
     let totalScore = 0;
     
-    // Проверяем горизонтальные комбинации
     for (let y = 0; y < 8; y++) {
         for (let x = 0; x < 6; x++) {
             if (match3Board[y][x] !== '' && 
@@ -713,7 +742,6 @@ function checkMatch3Combinations() {
                 combinationsFound++;
                 totalScore += 10;
                 
-                // Удаляем комбинацию
                 for (let i = 0; i < 3; i++) {
                     match3Board[y][x+i] = '';
                     document.querySelector(`.match3-cell[data-x="${x+i}"][data-y="${y}"]`).textContent = '';
@@ -722,7 +750,6 @@ function checkMatch3Combinations() {
         }
     }
     
-    // Проверяем вертикальные комбинации
     for (let x = 0; x < 8; x++) {
         for (let y = 0; y < 6; y++) {
             if (match3Board[y][x] !== '' && 
@@ -732,7 +759,6 @@ function checkMatch3Combinations() {
                 combinationsFound++;
                 totalScore += 10;
                 
-                // Удаляем комбинацию
                 for (let i = 0; i < 3; i++) {
                     match3Board[y+i][x] = '';
                     document.querySelector(`.match3-cell[data-x="${x}"][data-y="${y+i}"]`).textContent = '';
@@ -752,7 +778,6 @@ function checkMatch3Combinations() {
         
         saveResult(`🧩 Три в ряд: ${combinationsFound} комбинаций! +${totalScore} монет`);
         
-        // Заполняем пустые клетки
         setTimeout(fillMatch3EmptyCells, 500);
     }
 }
@@ -761,24 +786,20 @@ function fillMatch3EmptyCells() {
     for (let x = 0; x < 8; x++) {
         for (let y = 7; y >= 0; y--) {
             if (match3Board[y][x] === '') {
-                // Сдвигаем элементы вниз
                 for (let ny = y; ny > 0; ny--) {
                     match3Board[ny][x] = match3Board[ny-1][x];
                 }
-                // Новый элемент сверху
                 match3Board[0][x] = match3Symbols[Math.floor(Math.random() * match3Symbols.length)];
             }
         }
     }
     
-    // Обновляем отображение
     for (let y = 0; y < 8; y++) {
         for (let x = 0; x < 8; x++) {
             document.querySelector(`.match3-cell[data-x="${x}"][data-y="${y}"]`).textContent = match3Board[y][x];
         }
     }
     
-    // Снова проверяем комбинации
     setTimeout(checkMatch3Combinations, 300);
 }
 
@@ -788,4 +809,3 @@ document.addEventListener('DOMContentLoaded', function() {
     createRouletteWheel();
     initUserData();
 });
-
