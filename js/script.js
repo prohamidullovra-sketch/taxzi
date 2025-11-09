@@ -309,22 +309,90 @@ function handleAdminKeypress(event) {
     }
 }
 
+// Админ функции
 function checkAdminPassword() {
     const password = document.getElementById('adminPassword').value;
     if (password === '1111') {
+        // Даем 1000 монет при входе
         userBalance += 1000;
         updateBalance();
         
-        document.getElementById('result').innerHTML = `
-            <div class="result-text">⚙️ Админ доступ разрешен!</div>
-            <div style="font-size: 14px; color: #666;">+1000 монет! Баланс: ${userBalance} монет</div>
-        `;
+        // Показываем дополнительные функции
+        document.getElementById('adminFunctions').style.display = 'block';
         
-        saveResult('⚙️ Админ панель: доступ разрешен +1000 монет');
-        closeAdminPanel();
+        alert('✅ Админ доступ открыт! +1000 монет');
+        saveResult('⚙️ Админ: вход +1000 монет');
     } else {
         alert('❌ Неверный пароль!');
-        document.getElementById('adminPassword').value = '';
+    }
+}
+
+// Функции монет
+function addCoins(amount) {
+    userBalance += amount;
+    updateBalance();
+    alert(`✅ +${amount} монет! Баланс: ${userBalance}`);
+    saveResult(`⚙️ Админ: +${amount} монет`);
+}
+
+function addCustomCoins() {
+    const amount = parseInt(document.getElementById('customCoins').value);
+    if (amount > 0) {
+        addCoins(amount);
+    } else {
+        alert('Введите число больше 0!');
+    }
+}
+
+// Функции дизайна
+function changeBackground() {
+    const colors = ['#667eea', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#a29bfe'];
+    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+    document.body.style.background = `linear-gradient(135deg, ${randomColor} 0%, #764ba2 100%)`;
+    alert('🎨 Фон изменен!');
+}
+
+function resetDesign() {
+    document.body.style.background = '';
+    alert('🎨 Дизайн сброшен!');
+}
+
+// Функции изображений
+function addHeaderImage() {
+    const imageUrl = document.getElementById('imageUrlInput').value;
+    if (imageUrl) {
+        const header = document.querySelector('.game-header');
+        const img = document.createElement('img');
+        img.src = imageUrl;
+        img.style.maxWidth = '200px';
+        img.style.margin = '10px auto';
+        img.style.borderRadius = '10px';
+        header.appendChild(img);
+        alert('🖼️ Изображение добавлено в шапку!');
+    } else {
+        alert('Введите URL изображения!');
+    }
+}
+
+// Скачать сайт
+function downloadSite() {
+    const htmlContent = document.documentElement.outerHTML;
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'taxi-casino-hub.html';
+    link.click();
+    
+    URL.revokeObjectURL(url);
+    alert('📥 Сайт скачан!');
+}
+
+// Остальные функции админ панели остаются без изменений
+function handleAdminKeypress(event) {
+    if (event.key === 'Enter') {
+        checkAdminPassword();
     }
 }
 
@@ -720,3 +788,4 @@ document.addEventListener('DOMContentLoaded', function() {
     createRouletteWheel();
     initUserData();
 });
+
