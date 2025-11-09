@@ -21,9 +21,8 @@
             <h2>🎮 Игровой Хаб</h2>
             <div class="game-buttons">
                 <button class="game-btn active" onclick="showGame('roulette')">🎯 Такси Рулетка</button>
-                <button class="game-btn" onclick="showGame('Сапёр')">💣 Сапёр</button>
-                <button class="game-btn" onclick="showGame('Три в ряд')">🧩 Три в ряд</button>
-                
+                <button class="game-btn" onclick="showGame('minesweeper')">💣 Сапёр</button>
+                <button class="game-btn" onclick="showGame('match3')">🧩 Три в ряд</button>
             </div>
 
             <!-- Однорукий бандит -->
@@ -42,28 +41,65 @@
 
         <!-- Основной контент -->
         <div class="main-content">
-            <div class="game-header">
-                <div class="taxi-icon">🚖</div>
-                <h1>Такси Казино Хаб</h1>
-                <p class="subtitle">Зарабатывайте монеты и обменивайте на реальные призы!</p>
+            <!-- Рулетка -->
+            <div class="game-area active" id="roulette-game">
+                <div class="game-header">
+                    <div class="taxi-icon">🚖</div>
+                    <h1>Такси Казино Хаб</h1>
+                    <p class="subtitle">Зарабатывайте монеты и обменивайте на реальные призы!</p>
+                </div>
+
+                <div class="roulette-section">
+                    <div class="roulette-container">
+                        <div class="pointer"></div>
+                        <div class="wheel" id="wheel">
+                            <svg width="400" height="400" viewBox="0 0 400 400" id="rouletteSvg"></svg>
+                        </div>
+                    </div>
+                    
+                    <div class="result" id="result">
+                        <div class="result-text">Крутите рулетку и выигрывайте монеты!</div>
+                    </div>
+                    
+                    <div class="buttons">
+                        <button class="spin-btn pulse" id="spinBtn" onclick="spinRoulette()">🎯 Крутить рулетку (5 монет)</button>
+                        <button class="history-btn" onclick="toggleHistory()">📊 История</button>
+                    </div>
+                    
+                    <div class="history" id="history"></div>
+                </div>
             </div>
 
-            <div class="roulette-section">
-                <div class="roulette-container">
-                    <div class="pointer"></div>
-                    <div class="wheel" id="wheel"></div>
+            <!-- Сапер -->
+            <div class="game-area" id="minesweeper-game">
+                <div class="game-header">
+                    <div class="game-icon">💣</div>
+                    <h1>Сапёр</h1>
+                    <p class="subtitle">Найдите все мины и заработайте монеты!</p>
                 </div>
-                
-                <div class="result" id="result">
-                    <div class="result-text">Крутите рулетку и выигрывайте монеты!</div>
+                <div class="minesweeper-board" id="minesweeperBoard"></div>
+                <div class="result" id="minesweeperResult">
+                    <div class="result-text">Нажмите на клетку чтобы начать игру</div>
                 </div>
-                
                 <div class="buttons">
-                    <button class="spin-btn pulse" id="spinBtn" onclick="spinRoulette()">🎯 Крутить рулетку (5 монет)</button>
-                    <button class="history-btn" onclick="toggleHistory()">📊 История</button>
+                    <button class="spin-btn" onclick="initMinesweeper()">🔄 Новая игра</button>
                 </div>
-                
-                <div class="history" id="history"></div>
+            </div>
+
+            <!-- Три в ряд -->
+            <div class="game-area" id="match3-game">
+                <div class="game-header">
+                    <div class="game-icon">🧩</div>
+                    <h1>Три в ряд</h1>
+                    <p class="subtitle">Собирайте линии из 3+ одинаковых элементов!</p>
+                </div>
+                <div class="match3-board" id="match3Board"></div>
+                <div class="result" id="match3Result">
+                    <div class="result-text">Выберите два элемента для обмена</div>
+                </div>
+                <div class="buttons">
+                    <button class="spin-btn" onclick="initMatch3()">🔄 Новая игра</button>
+                </div>
             </div>
         </div>
 
@@ -95,6 +131,29 @@
             </div>
         </div>
     </div>
+
+    <!-- Админ панель -->
+    <div class="admin-panel" id="adminPanel">
+        <h3>⚙️ Админ Панель</h3>
+        <input type="password" id="adminPassword" placeholder="Пароль" class="admin-input">
+        <div class="admin-buttons">
+            <button class="admin-btn-panel cancel-btn" onclick="closeAdminPanel()">Закрыть</button>
+            <button class="admin-btn-panel confirm-btn" onclick="checkAdminPassword()">Войти</button>
+        </div>
+        
+        <div id="moneyFunctions" style="display: none; margin-top: 20px;">
+            <div class="coins-grid">
+                <button class="coin-btn" onclick="addCoins(1000)">+1,000</button>
+                <button class="coin-btn" onclick="addCoins(5000)">+5,000</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Скрытый input для загрузки файлов -->
+    <input type="file" id="fileInput" accept="image/*" multiple style="display: none;">
+
+    <!-- Кнопка открытия админки -->
+    <button class="admin-btn" onclick="showAdminPanel()" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">⚙️ Админ</button>
 
     <script src="js/script.js"></script>
 </body>
