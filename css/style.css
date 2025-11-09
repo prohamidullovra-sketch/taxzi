@@ -500,7 +500,155 @@ button {
     text-align: center;
 }
 
-/* Админ панель */
+/* Стили для конструктора */
+.admin-tabs {
+    display: flex;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #eee;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.tab-btn.active {
+    border-bottom-color: #667eea;
+    color: #667eea;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.coins-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.coin-btn {
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(45deg, #FFD700, #FFA500);
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.coin-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+}
+
+.color-picker-group {
+    display: grid;
+    gap: 15px;
+    margin: 15px 0;
+}
+
+.color-picker {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.color-picker label {
+    font-weight: 600;
+    color: #333;
+}
+
+.color-input {
+    width: 60px;
+    height: 40px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.upload-area {
+    border: 2px dashed #667eea;
+    border-radius: 15px;
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: rgba(102, 126, 234, 0.05);
+}
+
+.upload-area:hover {
+    background: rgba(102, 126, 234, 0.1);
+}
+
+.upload-area.dragover {
+    background: rgba(102, 126, 234, 0.2);
+    border-color: #ff6b6b;
+}
+
+.upload-icon {
+    font-size: 48px;
+    margin-bottom: 10px;
+}
+
+.upload-subtitle {
+    color: #666;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.url-section {
+    margin: 20px 0;
+}
+
+.image-hint {
+    background: #e3f2fd;
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 14px;
+    color: #1976d2;
+    margin-top: 15px;
+}
+
+/* Стили для перетаскиваемых изображений */
+.draggable-image {
+    position: absolute;
+    cursor: move;
+    border: 2px solid #667eea;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    resize: both;
+    overflow: auto;
+    max-width: 300px;
+    max-height: 300px;
+    z-index: 1000;
+}
+
+.resize-handle {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: #667eea;
+    border: 2px solid white;
+    border-radius: 50%;
+    bottom: -6px;
+    right: -6px;
+    cursor: nwse-resize;
+}
 .admin-panel {
     position: fixed;
     top: 50%;
