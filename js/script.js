@@ -133,16 +133,13 @@ function spinRoulette() {
     
     const resultDiv = document.getElementById('result');
     const spinBtn = document.getElementById('spinBtn');
-    const wheel = document.getElementById('wheel');
-    
-    if (!spinBtn || !wheel) return;
+    const wheelElement = document.getElementById('wheel'); // ← переименовал переменную
     
     spinBtn.disabled = true;
     spinBtn.classList.remove('pulse');
-    const wheel = document.getElementById('wheel');
     
-    wheel.style.transition = 'none';
-    wheel.style.transform = 'rotate(0deg)';
+    wheelElement.style.transition = 'none';
+    wheelElement.style.transform = 'rotate(0deg)';
     
     setTimeout(() => {
         const randomIndex = Math.floor(Math.random() * 12);
@@ -151,9 +148,8 @@ function spinRoulette() {
         const targetAngle = 360 - (randomIndex * 30) - 15;
         const spinDegrees = 5 * 360 + targetAngle;
         
-        wheel.style.transition = 'transform 4s cubic-bezier(0.1, 0.3, 0.2, 1)';
-        wheel.style.transform = `rotate(${spinDegrees}deg)`;
-        
+        wheelElement.style.transition = 'transform 4s cubic-bezier(0.1, 0.3, 0.2, 1)';
+        wheelElement.style.transform = `rotate(${spinDegrees}deg)`;    
         setTimeout(() => {
             userBalance += coins;
             updateBalance();
