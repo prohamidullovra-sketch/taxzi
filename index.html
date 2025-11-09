@@ -133,8 +133,18 @@
     </div>
 
     <!-- Админ панель -->
-    <div class="admin-panel" id="adminPanel">
-        <h3>⚙️ Админ Панель</h3>
+<div class="admin-panel" id="adminPanel">
+    <h3>🎨 Визуальный Конструктор</h3>
+    
+    <div class="admin-tabs">
+        <button class="tab-btn active" onclick="openTab('moneyTab')">💰 Монеты</button>
+        <button class="tab-btn" onclick="openTab('designTab')">🎨 Дизайн</button>
+        <button class="tab-btn" onclick="openTab('contentTab')">📝 Контент</button>
+        <button class="tab-btn" onclick="openTab('filesTab')">🖼️ Файлы</button>
+    </div>
+
+    <!-- Вкладка монет -->
+    <div id="moneyTab" class="tab-content active">
         <input type="password" id="adminPassword" placeholder="Пароль" class="admin-input">
         <div class="admin-buttons">
             <button class="admin-btn-panel cancel-btn" onclick="closeAdminPanel()">Закрыть</button>
@@ -145,16 +155,82 @@
             <div class="coins-grid">
                 <button class="coin-btn" onclick="addCoins(1000)">+1,000</button>
                 <button class="coin-btn" onclick="addCoins(5000)">+5,000</button>
+                <button class="coin-btn" onclick="addCoins(10000)">+10,000</button>
             </div>
+            <input type="number" id="customCoins" placeholder="Своя сумма" class="admin-input">
+            <button class="admin-btn-panel confirm-btn" onclick="addCustomCoins()">Добавить</button>
         </div>
     </div>
 
-    <!-- Скрытый input для загрузки файлов -->
-    <input type="file" id="fileInput" accept="image/*" multiple style="display: none;">
+    <!-- Вкладка дизайна -->
+    <div id="designTab" class="tab-content">
+        <div class="color-picker-group">
+            <div class="color-picker">
+                <label>Основной цвет:</label>
+                <input type="color" id="primaryColor" value="#667eea" class="color-input">
+            </div>
+            <div class="color-picker">
+                <label>Фон:</label>
+                <input type="color" id="bgColor" value="#764ba2" class="color-input">
+            </div>
+            <div class="color-picker">
+                <label>Акцент:</label>
+                <input type="color" id="accentColor" value="#ff6b6b" class="color-input">
+            </div>
+        </div>
+        <button class="admin-btn-panel confirm-btn" onclick="applyColors()">Применить цвета</button>
+        <button class="admin-btn-panel" onclick="resetDesign()" style="background: #6c757d;">Сбросить</button>
+    </div>
 
-    <!-- Кнопка открытия админки -->
-    <button class="admin-btn" onclick="showAdminPanel()" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">⚙️ Админ</button>
+    <!-- Вкладка контента -->
+    <div id="contentTab" class="tab-content">
+        <div class="style-controls">
+            <button class="admin-btn-panel confirm-btn" onclick="enableStyleEditing()">✏️ Редактировать стили</button>
+        </div>
+        
+        <div class="style-editor" id="styleEditor" style="display: none; margin-top: 15px;">
+            <textarea id="cssEditor" class="admin-input" style="height: 200px; font-family: monospace;" placeholder="Редактируйте CSS стили здесь..."></textarea>
+            <button class="admin-btn-panel confirm-btn" onclick="applyCustomStyles()">Применить стили</button>
+        </div>
+    </div>
 
+    <!-- Вкладка файлов -->
+    <div id="filesTab" class="tab-content">
+        <div class="upload-section">
+            <div class="upload-area" id="uploadArea" 
+                 ondrop="handleDrop(event)" 
+                 ondragover="handleDragOver(event)"
+                 onclick="document.getElementById('fileInput').click()">
+                <div class="upload-icon">📁</div>
+                <div>Перетащите сюда изображения</div>
+                <div class="upload-subtitle">или нажмите для выбора</div>
+            </div>
+        </div>
+        
+        <div class="url-section">
+            <input type="text" id="imageUrl" placeholder="Вставьте URL изображения" class="admin-input">
+            <button class="admin-btn-panel confirm-btn" onclick="addImageFromUrl()">Добавить по ссылке</button>
+        </div>
+        
+        <div class="file-controls">
+            <button class="admin-btn-panel confirm-btn" onclick="saveImageStructure()">💾 Сохранить структуру</button>
+            <button class="admin-btn-panel" onclick="loadImageStructure()">📂 Загрузить структуру</button>
+        </div>
+    </div>
+</div>
+
+<!-- Контекстное меню для редактирования -->
+<div id="contextMenu" class="context-menu" style="display: none;">
+    <div class="context-item" onclick="editElementStyle()">✏️ Изменить стиль</div>
+    <div class="context-item" onclick="deleteElement()">🗑️ Удалить</div>
+    <div class="context-item" onclick="hideContextMenu()">❌ Отмена</div>
+</div>
+
+<!-- Скрытый input для загрузки файлов -->
+<input type="file" id="fileInput" accept="image/*" multiple style="display: none;">
+
+<!-- Кнопка открытия админки -->
+<button class="admin-btn" onclick="showAdminPanel()" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">⚙️ Админ</button>
     <script src="js/script.js"></script>
 </body>
 </html>
