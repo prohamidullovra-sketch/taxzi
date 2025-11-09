@@ -330,13 +330,7 @@ function checkAdminPassword() {
     const correctPassword = '1111'; // В реальном проекте храните это на сервере
     
     if (password === correctPassword) {
-        userBalance += 1000;
-        updateBalance();
-        
-        document.getElementById('moneyFunctions').style.display = 'block';
-        
-        alert('✅ Админ доступ открыт! +1000 монет');
-        saveResult('⚙️ Админ: вход +1000 монет');
+        alert('✅ Добро пожаловать!');
     } else {
         alert('❌ Неверный пароль!');
         document.getElementById('adminPassword').value = '';
