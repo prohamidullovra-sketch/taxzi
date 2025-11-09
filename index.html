@@ -15,10 +15,10 @@
             <div class="balance-container">
                 <div>Ваш баланс</div>
                 <div class="balance" id="balance">0 монет</div>
-                <div style="font-size: 12px; color: #666;">10 монет = 1 рубль</div>
+                <div class="exchange-rate">10 монет = 1 рубль</div>
             </div>
 
-            <h2>🎮 Игровой Хаб</h2>
+            <h2 class="sidebar-title">🎮 Игровой Хаб</h2>
             <div class="game-buttons">
                 <button class="game-btn active" onclick="showGame('roulette')">🎯 Такси Рулетка</button>
                 <button class="game-btn" onclick="showGame('minesweeper')">💣 Сапёр</button>
@@ -109,19 +109,19 @@
                 <h3>🛍️ Магазин призов</h3>
                 <div class="shop-items">
                     <div class="shop-item" onclick="selectShopItem(0)">
-                        <div>🎁 Набор стикеров</div>
+                        <div class="item-name">🎁 Набор стикеров</div>
                         <div class="item-price">50 монет</div>
                     </div>
                     <div class="shop-item" onclick="selectShopItem(1)">
-                        <div>☕ Кофе с водителем</div>
+                        <div class="item-name">☕ Кофе с водителем</div>
                         <div class="item-price">100 монет</div>
                     </div>
                     <div class="shop-item" onclick="selectShopItem(2)">
-                        <div>🚕 Поездка 15 мин</div>
+                        <div class="item-name">🚕 Поездка 15 мин</div>
                         <div class="item-price">200 монет</div>
                     </div>
                     <div class="shop-item" onclick="selectShopItem(3)">
-                        <div>💵 Вывод денег</div>
+                        <div class="item-name">💵 Вывод денег</div>
                         <div class="item-price">1000 монет</div>
                     </div>
                 </div>
