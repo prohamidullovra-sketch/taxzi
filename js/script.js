@@ -4,6 +4,8 @@ let selectedShopItem = null;
 let currentGame = 'roulette';
 let isSpinning = false;
 let resultsHistory = [];
+let isStyleEditing = false;
+let selectedElement = null;
 
 // Инициализация данных пользователя
 function initUserData() {
@@ -11,6 +13,18 @@ function initUserData() {
     userBalance = userData.balance || 100;
     resultsHistory = userData.history || [];
     updateBalance();
+    
+    // Загрузка сохраненных изображений
+    const savedImages = JSON.parse(localStorage.getItem('savedImages')) || [];
+    savedImages.forEach(imgData => {
+        createDraggableImage(imgData.src, imgData);
+    });
+    
+    // Загрузка сохраненных стилей
+    const savedStyles = localStorage.getItem('customStyles');
+    if (savedStyles) {
+        applyCustomCSS(savedStyles);
+    }
 }
 
 // Сохранение данных пользователя
@@ -295,10 +309,14 @@ function buyItem() {
 // Админ панель
 function showAdminPanel() {
     document.getElementById('adminPanel').style.display = 'block';
+    // Сбрасываем пароль при открытии
+    document.getElementById('adminPassword').value = '';
+    document.getElementById('moneyFunctions').style.display = 'none';
 }
 
 function closeAdminPanel() {
     document.getElementById('adminPanel').style.display = 'none';
+    disableStyleEditing();
 }
 
 function handleAdminKeypress(event) {
@@ -309,7 +327,10 @@ function handleAdminKeypress(event) {
 
 function checkAdminPassword() {
     const password = document.getElementById('adminPassword').value;
-    if (password === '1111') {
+    // Пароль скрыт в коде для безопасности
+    const correctPassword = '1111'; // В реальном проекте храните это на сервере
+    
+    if (password === correctPassword) {
         userBalance += 1000;
         updateBalance();
         
@@ -319,6 +340,7 @@ function checkAdminPassword() {
         saveResult('⚙️ Админ: вход +1000 монет');
     } else {
         alert('❌ Неверный пароль!');
+        document.getElementById('adminPassword').value = '';
     }
 }
 
@@ -334,6 +356,7 @@ function addCustomCoins() {
     const amount = parseInt(document.getElementById('customCoins').value);
     if (amount > 0) {
         addCoins(amount);
+        document.getElementById('customCoins').value = '';
     } else {
         alert('Введите число больше 0!');
     }
@@ -360,7 +383,11 @@ function applyColors() {
         btn.style.background = `linear-gradient(45deg, ${accent}, #ee5a24)`;
     });
     
-    alert('🎨 Цвета применены!');
+    // Сохраняем цвета
+    const colors = { primary, bg, accent };
+    localStorage.setItem('customColors', JSON.stringify(colors));
+    
+    alert('🎨 Цвета применены и сохранены!');
 }
 
 function resetDesign() {
@@ -368,6 +395,7 @@ function resetDesign() {
     document.querySelectorAll('.spin-btn').forEach(btn => {
         btn.style.background = '';
     });
+    localStorage.removeItem('customColors');
     alert('🎨 Дизайн сброшен!');
 }
 
@@ -375,6 +403,10 @@ function resetDesign() {
 function handleDragOver(event) {
     event.preventDefault();
     event.currentTarget.classList.add('dragover');
+}
+
+function handleDragLeave(event) {
+    event.currentTarget.classList.remove('dragover');
 }
 
 function handleDrop(event) {
@@ -409,41 +441,275 @@ function addImageFromUrl() {
     }
 }
 
-function createDraggableImage(src) {
+function createDraggableImage(src, savedData = null) {
     const img = document.createElement('img');
     img.src = src;
     img.className = 'draggable-image';
-    img.style.left = '100px';
-    img.style.top = '100px';
-    img.style.width = '150px';
     
+    if (savedData) {
+        img.style.left = savedData.left || '100px';
+        img.style.top = savedData.top || '100px';
+        img.style.width = savedData.width || '150px';
+        img.style.height = savedData.height || 'auto';
+        img.style.transform = savedData.transform || '';
+    } else {
+        img.style.left = '100px';
+        img.style.top = '100px';
+        img.style.width = '150px';
+    }
+    
+    makeImageDraggableAndResizable(img);
+    document.body.appendChild(img);
+    saveImageStructure();
+}
+
+function makeImageDraggableAndResizable(element) {
     let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-    img.onmousedown = dragMouseDown;
+    let isResizing = false;
+    
+    element.onmousedown = dragMouseDown;
     
     function dragMouseDown(e) {
+        if (e.target !== element) return;
+        
         e.preventDefault();
         pos3 = e.clientX;
         pos4 = e.clientY;
+        
+        // Проверяем, кликнули ли на угол для изменения размера
+        const rect = element.getBoundingClientRect();
+        const cornerSize = 20;
+        
+        if (e.clientX > rect.right - cornerSize && e.clientY > rect.bottom - cornerSize) {
+            isResizing = true;
+        } else {
+            isResizing = false;
+        }
+        
         document.onmouseup = closeDragElement;
         document.onmousemove = elementDrag;
     }
     
     function elementDrag(e) {
         e.preventDefault();
-        pos1 = pos3 - e.clientX;
-        pos2 = pos4 - e.clientY;
-        pos3 = e.clientX;
-        pos4 = e.clientY;
-        img.style.top = (img.offsetTop - pos2) + "px";
-        img.style.left = (img.offsetLeft - pos1) + "px";
+        
+        if (isResizing) {
+            // Изменение размера
+            const newWidth = e.clientX - element.offsetLeft;
+            const newHeight = e.clientY - element.offsetTop;
+            
+            if (newWidth > 50 && newHeight > 50) {
+                element.style.width = newWidth + 'px';
+                element.style.height = newHeight + 'px';
+            }
+        } else {
+            // Перетаскивание
+            pos1 = pos3 - e.clientX;
+            pos2 = pos4 - e.clientY;
+            pos3 = e.clientX;
+            pos4 = e.clientY;
+            
+            element.style.top = (element.offsetTop - pos2) + "px";
+            element.style.left = (element.offsetLeft - pos1) + "px";
+        }
     }
     
     function closeDragElement() {
         document.onmouseup = null;
         document.onmousemove = null;
+        saveImageStructure();
     }
+}
+
+function saveImageStructure() {
+    const images = document.querySelectorAll('.draggable-image');
+    const imageData = Array.from(images).map(img => ({
+        src: img.src,
+        left: img.style.left,
+        top: img.style.top,
+        width: img.style.width,
+        height: img.style.height,
+        transform: img.style.transform
+    }));
     
-    document.body.appendChild(img);
+    localStorage.setItem('savedImages', JSON.stringify(imageData));
+    alert('💾 Структура изображений сохранена!');
+}
+
+function loadImageStructure() {
+    const savedImages = JSON.parse(localStorage.getItem('savedImages')) || [];
+    
+    // Удаляем текущие изображения
+    document.querySelectorAll('.draggable-image').forEach(img => img.remove());
+    
+    // Создаем сохраненные изображения
+    savedImages.forEach(imgData => {
+        createDraggableImage(imgData.src, imgData);
+    });
+    
+    alert('📂 Структура изображений загружена!');
+}
+
+// Стили
+function exportStyles() {
+    const styles = {
+        customCSS: localStorage.getItem('customStyles') || '',
+        colors: JSON.parse(localStorage.getItem('customColors')) || {}
+    };
+    
+    const dataStr = JSON.stringify(styles, null, 2);
+    const dataBlob = new Blob([dataStr], {type: 'application/json'});
+    
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.download = 'taxi-casino-styles.json';
+    link.href = url;
+    link.click();
+    
+    alert('📥 Стили экспортированы!');
+}
+
+function importStyles() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    
+    input.onchange = e => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            try {
+                const styles = JSON.parse(e.target.result);
+                
+                if (styles.customCSS) {
+                    localStorage.setItem('customStyles', styles.customCSS);
+                    applyCustomCSS(styles.customCSS);
+                }
+                
+                if (styles.colors) {
+                    localStorage.setItem('customColors', JSON.stringify(styles.colors));
+                    applyColorsFromStorage();
+                }
+                
+                alert('📤 Стили импортированы и применены!');
+            } catch (error) {
+                alert('❌ Ошибка при импорте стилей!');
+            }
+        };
+        
+        reader.readAsText(file);
+    };
+    
+    input.click();
+}
+
+function applyCustomCSS(css) {
+    let styleElement = document.getElementById('custom-styles');
+    if (!styleElement) {
+        styleElement = document.createElement('style');
+        styleElement.id = 'custom-styles';
+        document.head.appendChild(styleElement);
+    }
+    styleElement.textContent = css;
+}
+
+function applyColorsFromStorage() {
+    const colors = JSON.parse(localStorage.getItem('customColors'));
+    if (colors) {
+        document.getElementById('primaryColor').value = colors.primary;
+        document.getElementById('bgColor').value = colors.bg;
+        document.getElementById('accentColor').value = colors.accent;
+        applyColors();
+    }
+}
+
+function enableStyleEditing() {
+    isStyleEditing = !isStyleEditing;
+    
+    if (isStyleEditing) {
+        document.querySelectorAll('.game-btn, .balance-container, .shop, .result, .spin-btn').forEach(el => {
+            el.classList.add('editable-element');
+            el.addEventListener('click', handleElementClick);
+        });
+        
+        document.getElementById('styleEditor').style.display = 'block';
+        document.getElementById('cssEditor').value = localStorage.getItem('customStyles') || '';
+        
+        alert('✏️ Режим редактирования включен! Кликайте на элементы для изменения.');
+    } else {
+        disableStyleEditing();
+    }
+}
+
+function disableStyleEditing() {
+    isStyleEditing = false;
+    document.querySelectorAll('.editable-element').forEach(el => {
+        el.classList.remove('editable-element', 'editing');
+        el.removeEventListener('click', handleElementClick);
+    });
+    document.getElementById('styleEditor').style.display = 'none';
+}
+
+function handleElementClick(event) {
+    if (!isStyleEditing) return;
+    
+    event.stopPropagation();
+    selectedElement = event.currentTarget;
+    
+    // Убираем выделение с других элементов
+    document.querySelectorAll('.editable-element').forEach(el => {
+        el.classList.remove('editing');
+    });
+    
+    // Выделяем текущий элемент
+    selectedElement.classList.add('editing');
+    
+    // Показываем контекстное меню
+    const contextMenu = document.getElementById('contextMenu');
+    contextMenu.style.display = 'block';
+    contextMenu.style.left = event.pageX + 'px';
+    contextMenu.style.top = event.pageY + 'px';
+}
+
+function editElementStyle() {
+    if (!selectedElement) return;
+    
+    const currentStyle = window.getComputedStyle(selectedElement);
+    const cssText = `
+/* Стили для ${selectedElement.className} */
+.${selectedElement.className.split(' ')[0]} {
+    background: ${currentStyle.background};
+    color: ${currentStyle.color};
+    border: ${currentStyle.border};
+    /* Добавьте другие свойства по необходимости */
+}
+    `.trim();
+    
+    document.getElementById('cssEditor').value = cssText;
+    hideContextMenu();
+}
+
+function deleteElement() {
+    if (selectedElement && confirm('Удалить этот элемент?')) {
+        selectedElement.remove();
+        hideContextMenu();
+    }
+}
+
+function hideContextMenu() {
+    document.getElementById('contextMenu').style.display = 'none';
+    if (selectedElement) {
+        selectedElement.classList.remove('editing');
+        selectedElement = null;
+    }
+}
+
+function applyCustomStyles() {
+    const css = document.getElementById('cssEditor').value;
+    localStorage.setItem('customStyles', css);
+    applyCustomCSS(css);
+    alert('✅ Пользовательские стили применены и сохранены!');
 }
 
 // Игры
@@ -511,22 +777,6 @@ function toggleHistory() {
     } else {
         displayHistory();
         historyDiv.style.display = 'block';
-    }
-}
-
-// Плавающие элементы
-function createFloatingElements() {
-    const container = document.getElementById('floatingElements');
-    const elements = ['🚗', '🚕', '🚙', '💎', '⭐', '🎰'];
-    
-    for (let i = 0; i < 15; i++) {
-        const element = document.createElement('div');
-        element.className = 'floating-element';
-        element.textContent = elements[Math.floor(Math.random() * elements.length)];
-        element.style.left = Math.random() * 100 + 'vw';
-        element.style.animationDelay = Math.random() * 20 + 's';
-        element.style.fontSize = (Math.random() * 20 + 16) + 'px';
-        container.appendChild(element);
     }
 }
 
@@ -803,9 +1053,35 @@ function fillMatch3EmptyCells() {
     setTimeout(checkMatch3Combinations, 300);
 }
 
+// Плавающие элементы
+function createFloatingElements() {
+    const container = document.getElementById('floatingElements');
+    const elements = ['🚗', '🚕', '🚙', '💎', '⭐', '🎰'];
+    
+    for (let i = 0; i < 15; i++) {
+        const element = document.createElement('div');
+        element.className = 'floating-element';
+        element.textContent = elements[Math.floor(Math.random() * elements.length)];
+        element.style.left = Math.random() * 100 + 'vw';
+        element.style.animationDelay = Math.random() * 20 + 's';
+        element.style.fontSize = (Math.random() * 20 + 16) + 'px';
+        container.appendChild(element);
+    }
+}
+
+// Закрытие контекстного меню при клике вне его
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('#contextMenu') && !e.target.closest('.editable-element')) {
+        hideContextMenu();
+    }
+});
+
 // Инициализация
 document.addEventListener('DOMContentLoaded', function() {
     createFloatingElements();
     createRouletteWheel();
     initUserData();
+    
+    // Загружаем сохраненные цвета
+    applyColorsFromStorage();
 });
