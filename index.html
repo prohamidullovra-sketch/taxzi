@@ -138,26 +138,48 @@
     <!-- Админ панель -->
 <div class="admin-panel" id="adminPanel">
     <h3>⚙️ Админ Панель</h3>
-    <input type="password" class="admin-input" id="adminPassword" placeholder="Введите пароль" onkeypress="handleAdminKeypress(event)">
     
-    <!-- СТАРАЯ ФУНКЦИЯ - +1000 монет -->
+    <!-- Пароль -->
+    <input type="password" class="admin-input" id="adminPassword" placeholder="Введите пароль 1111" onkeypress="handleAdminKeypress(event)">
+    
+    <!-- Основные функции -->
     <div class="admin-buttons">
         <button class="admin-btn-panel cancel-btn" onclick="closeAdminPanel()">Отмена</button>
-        <button class="admin-btn-panel confirm-btn" onclick="checkAdminPassword()">Получить 1000 монет</button>
+        <button class="admin-btn-panel confirm-btn" onclick="checkAdminPassword()">Войти</button>
     </div>
     
-    <!-- НОВЫЕ ФУНКЦИИ - показываются после ввода пароля -->
-    <div id="adminFunctions" style="display: none; margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
-        <h4>🎨 Дополнительные функции</h4>
-        <button class="admin-btn-panel" onclick="showDesignPanel()" style="background: #9C27B0; margin: 5px;">
-            🎨 Конструктор дизайна
-        </button>
-        <button class="admin-btn-panel" onclick="downloadUpdatedSite()" style="background: #4CAF50; margin: 5px;">
-            📥 Скачать сайт
-        </button>
-        <button class="admin-btn-panel" onclick="addMoreCoins()" style="background: #FF9800; margin: 5px;">
-            🪙 Добавить еще 1000 монет
-        </button>
+    <!-- Дополнительные функции (после входа) -->
+    <div id="adminFunctions" style="display: none; margin-top: 20px;">
+        
+        <!-- Деньги -->
+        <div class="admin-section">
+            <h4>💰 Монеты</h4>
+            <button class="admin-btn-panel" onclick="addCoins(1000)" style="background: #FFD700;">+1000 монет</button>
+            <button class="admin-btn-panel" onclick="addCoins(5000)" style="background: #FFA500;">+5000 монет</button>
+            <input type="number" id="customCoins" placeholder="Свое количество" class="admin-input" style="margin: 10px 0;">
+            <button class="admin-btn-panel" onclick="addCustomCoins()" style="background: #FF6B00;">Добавить</button>
+        </div>
+        
+        <!-- Дизайн -->
+        <div class="admin-section">
+            <h4>🎨 Дизайн</h4>
+            <button class="admin-btn-panel" onclick="changeBackground()" style="background: #9C27B0;">Сменить фон</button>
+            <button class="admin-btn-panel" onclick="resetDesign()" style="background: #795548;">Сбросить дизайн</button>
+        </div>
+        
+        <!-- Изображения -->
+        <div class="admin-section">
+            <h4>🖼️ Изображения</h4>
+            <input type="text" id="imageUrlInput" placeholder="URL картинки" class="admin-input">
+            <button class="admin-btn-panel" onclick="addHeaderImage()" style="background: #2196F3;">Добавить в шапку</button>
+        </div>
+        
+        <!-- Экспорт -->
+        <div class="admin-section">
+            <h4>💾 Экспорт</h4>
+            <button class="admin-btn-panel" onclick="downloadSite()" style="background: #4CAF50;">📥 Скачать сайт</button>
+        </div>
+        
     </div>
 </div>
 
