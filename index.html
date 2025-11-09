@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Taxi Casino Hub</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="floating-elements" id="floatingElements"></div>
@@ -143,11 +143,12 @@
             <button class="tab-btn active" onclick="openTab('moneyTab')">💰 Монеты</button>
             <button class="tab-btn" onclick="openTab('designTab')">🎨 Дизайн</button>
             <button class="tab-btn" onclick="openTab('imagesTab')">🖼️ Изображения</button>
+            <button class="tab-btn" onclick="openTab('styleTab')">💾 Стили</button>
         </div>
 
         <!-- Вкладка монет -->
         <div id="moneyTab" class="tab-content active">
-            <input type="password" class="admin-input" id="adminPassword" placeholder="Пароль: 1111" onkeypress="handleAdminKeypress(event)">
+            <input type="password" class="admin-input" id="adminPassword" placeholder="Введите пароль администратора" onkeypress="handleAdminKeypress(event)">
             <div class="admin-buttons">
                 <button class="admin-btn-panel cancel-btn" onclick="closeAdminPanel()">Закрыть</button>
                 <button class="admin-btn-panel confirm-btn" onclick="checkAdminPassword()">Войти</button>
@@ -206,12 +207,42 @@
                 <button class="admin-btn-panel confirm-btn" onclick="addImageFromUrl()">Добавить по ссылке</button>
             </div>
             
+            <div class="image-controls">
+                <button class="admin-btn-panel confirm-btn" onclick="saveImageStructure()">💾 Сохранить структуру</button>
+                <button class="admin-btn-panel" onclick="loadImageStructure()" style="background: #17a2b8;">📂 Загрузить структуру</button>
+            </div>
+            
             <div class="image-hint">
                 💡 После добавления: перетаскивайте мышкой и меняйте размер углами
             </div>
         </div>
+
+        <!-- Вкладка стилей -->
+        <div id="styleTab" class="tab-content">
+            <div class="style-controls">
+                <button class="admin-btn-panel confirm-btn" onclick="exportStyles()">📥 Экспорт стилей</button>
+                <button class="admin-btn-panel" onclick="importStyles()" style="background: #17a2b8;">📤 Импорт стилей</button>
+                <button class="admin-btn-panel" onclick="enableStyleEditing()" style="background: #6f42c1;">✏️ Редактировать стили</button>
+            </div>
+            
+            <div class="style-editor" id="styleEditor" style="display: none; margin-top: 15px;">
+                <textarea id="cssEditor" class="admin-input" style="height: 200px; font-family: monospace;" placeholder="Редактируйте CSS стили здесь..."></textarea>
+                <button class="admin-btn-panel confirm-btn" onclick="applyCustomStyles()">Применить стили</button>
+            </div>
+            
+            <div class="visual-editor-hint">
+                💡 В режиме редактирования: кликайте на элементы для изменения их стилей
+            </div>
+        </div>
     </div>
 
-    <script src="js/script.js"></script>
+    <!-- Контекстное меню для редактирования -->
+    <div id="contextMenu" class="context-menu" style="display: none;">
+        <div class="context-item" onclick="editElementStyle()">✏️ Изменить стиль</div>
+        <div class="context-item" onclick="deleteElement()">🗑️ Удалить</div>
+        <div class="context-item" onclick="hideContextMenu()">❌ Отмена</div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
