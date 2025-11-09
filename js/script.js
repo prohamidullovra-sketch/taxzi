@@ -7,16 +7,6 @@ let resultsHistory = [];
 let isStyleEditing = false;
 let selectedElement = null;
 
-// Фикс для ошибки на строке 420
-document.addEventListener('DOMContentLoaded', function() {
-    const fileInput = document.getElementById('fileInput');
-    if (fileInput) {
-        fileInput.addEventListener('change', function(e) {
-            handleImageFiles(e.target.files);
-        });
-    }
-});
-// Фикс ошибок
 function showComingSoon() { return false; }
 // Инициализация данных пользователя
 function initUserData() {
